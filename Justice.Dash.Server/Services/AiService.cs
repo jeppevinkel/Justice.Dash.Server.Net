@@ -102,6 +102,7 @@ public class AiService : BackgroundService
         CancellationToken cancellationToken)
     {
         var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
+        Directory.CreateDirectory(Path.Combine(basePath, "images", "food"));
         if (menuItem.Image is not null)
         {
             var path = Path.Combine(basePath, menuItem.Image.Path);
