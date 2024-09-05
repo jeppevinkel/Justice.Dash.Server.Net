@@ -1,6 +1,6 @@
 @Justice.Dash.Server_HostAddress = http://localhost:5027
 
-GET {{Justice.Dash.Server_HostAddress}}/weatherforecast/
+GET {{Justice.Dash.Server_HostAddress}}/menu/
 Accept: application/json
 
 ###
