@@ -3,3 +3,4 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+/Justice.Dash.Server/appsettings.Development.json
