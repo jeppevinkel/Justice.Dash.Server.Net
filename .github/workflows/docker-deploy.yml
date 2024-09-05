@@ -39,7 +39,7 @@ jobs:
         run: |
           label=$(date +%s)
           latest_tag="${{steps.extract_branch.outputs.branch == 'master' && '--tag ghcr.io/jeppevinkel/justice-dash-server-net:latest' || '--tag ghcr.io/jeppevinkel/justice-dash-server-net:latest-dev'}}"
-          docker build ./Justice.Dash.Server/Dockerfile --file Dockerfile $latest_tag --tag ghcr.io/jeppevinkel/justice-dash-server-net:${{steps.tag.outputs.new_tag}}
+          docker build Justice.Dash.Server/Dockerfile --file Dockerfile $latest_tag --tag ghcr.io/jeppevinkel/justice-dash-server-net:${{steps.tag.outputs.new_tag}}
           docker push --all-tags ghcr.io/jeppevinkel/justice-dash-server-net
       - name: Trigger Dev Container Recreation
         uses: distributhor/workflow-webhook@v3
