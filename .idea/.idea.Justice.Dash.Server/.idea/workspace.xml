@@ -7,16 +7,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Justice.Dash.Server/DataModels/Photo.cs" afterDir="false" />
+    <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="Add domicile photo support">
       <change afterPath="$PROJECT_DIR$/Justice.Dash.Server/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/WeatherForecastController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/DomicileController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/DashboardDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/DashboardDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Justice.Dash.Server.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Justice.Dash.Server.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Migrations/DashboardDbContextModelSnapshot.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Migrations/DashboardDbContextModelSnapshot.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Services/DomicileService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Services/DomicileService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -144,7 +138,7 @@
       <updated>1725469636610</updated>
       <workItem from="1725469637743" duration="10092000" />
       <workItem from="1725549815737" duration="18227000" />
-      <workItem from="1725997343637" duration="2257000" />
+      <workItem from="1725997343637" duration="2348000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -226,7 +220,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725574979535</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Add domicile photo support">
+      <option name="closed" value="true" />
+      <created>1725999630746</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1725999630746</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -252,6 +254,7 @@
     <MESSAGE value="Update docker build task" />
     <MESSAGE value="I was stupid..." />
     <MESSAGE value="Create the food image dir if not already exists." />
-    <option name="LAST_COMMIT_MESSAGE" value="Create the food image dir if not already exists." />
+    <MESSAGE value="Add domicile photo support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add domicile photo support" />
   </component>
 </project>
