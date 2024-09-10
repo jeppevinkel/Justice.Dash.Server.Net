@@ -7,10 +7,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="Add domicile photo support">
+    <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="Update gitignore">
       <change afterPath="$PROJECT_DIR$/Justice.Dash.Server/appsettings.Development.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/DomicileController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/DomicileController.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +138,7 @@
       <updated>1725469636610</updated>
       <workItem from="1725469637743" duration="10092000" />
       <workItem from="1725549815737" duration="18227000" />
-      <workItem from="1725997343637" duration="2348000" />
+      <workItem from="1725997343637" duration="3098000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -228,7 +228,15 @@
       <option name="project" value="LOCAL" />
       <updated>1725999630746</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Update gitignore">
+      <option name="closed" value="true" />
+      <created>1725999703946</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1725999703946</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,6 +263,7 @@
     <MESSAGE value="I was stupid..." />
     <MESSAGE value="Create the food image dir if not already exists." />
     <MESSAGE value="Add domicile photo support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add domicile photo support" />
+    <MESSAGE value="Update gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update gitignore" />
   </component>
 </project>
