@@ -9,6 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="GooglePhotosAlbumFetch" Version="1.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
           <PrivateAssets>all</PrivateAssets>
@@ -26,7 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\images\domicil\" />
+      <Folder Include="wwwroot\images\domicile\" />
       <Folder Include="wwwroot\images\food\" />
     </ItemGroup>
 

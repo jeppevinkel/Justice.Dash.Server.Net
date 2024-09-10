@@ -1,6 +1,5 @@
 using Justice.Dash.Server.Services;
 using Microsoft.EntityFrameworkCore;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace Justice.Dash.Server;
 
@@ -22,6 +21,7 @@ public class Program
         
         builder.Services.AddHostedService<FoodAndCoService>();
         builder.Services.AddHostedService<AiService>();
+        builder.Services.AddHostedService<DomicileService>();
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
