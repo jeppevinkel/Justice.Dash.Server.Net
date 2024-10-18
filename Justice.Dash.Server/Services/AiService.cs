@@ -37,15 +37,6 @@ public class AiService : BackgroundService
             await using AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
             await using var dbContext = scope.ServiceProvider.GetRequiredService<DashboardDbContext>();
 
-            foreach (MenuItem item in await dbContext.MenuItems.Include(it => it.VeganizedImage)
-                               .Where(it => it.VeganizedImage == null || it.VeganizedFoodName == null).Where(it => it.Date > DateOnly.FromDateTime(new DateTime())).ToListAsync(cancellationToken))
-            {
-                await CorrectVeganFoodName(item);
-                await Task.WhenAll(DescribeVeganFood(item),
-                    GenerateVeganImage(item, dbContext, cancellationToken));
-                await dbContext.SaveChangesAsync(cancellationToken);
-            }
-
             var menuItems = await dbContext.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage).Where(it => it.Dirty)
                 .ToListAsync(cancellationToken);
 
