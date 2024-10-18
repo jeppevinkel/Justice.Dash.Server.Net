@@ -37,17 +37,14 @@ public class AiService : BackgroundService
             await using AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
             await using var dbContext = scope.ServiceProvider.GetRequiredService<DashboardDbContext>();
 
-            var menuItems = await dbContext.MenuItems.Include(it => it.Image).Where(it => it.Dirty)
+            var menuItems = await dbContext.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage).Where(it => it.Dirty)
                 .ToListAsync(cancellationToken);
 
             foreach (MenuItem menuItem in menuItems)
             {
-                await Task.WhenAll(CorrectFoodName(menuItem), DescribeFood(menuItem),
-                    ListFoodContents(menuItem, _foodTypes), GenerateImage(menuItem, dbContext, cancellationToken));
-                // await CorrectFoodName(menuItem);
-                // await DescribeFood(menuItem);
-                // await ListFoodContents(menuItem, _foodTypes);
-                // await GenerateImage(menuItem, dbContext, cancellationToken);
+                await CorrectFoodName(menuItem);
+                await Task.WhenAll(DescribeFood(menuItem),
+                    ListFoodContents(menuItem, _foodTypes), GenerateImages(menuItem, dbContext, cancellationToken));
 
                 menuItem.Dirty = false;
                 _logger.LogDebug("Fixed the name and description of {Name} for {Date}", menuItem.FoodName,
@@ -67,6 +64,18 @@ public class AiService : BackgroundService
             new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
 
         menuItem.CorrectedFoodName = completion.ToString();
+
+        await CorrectVeganFoodName(menuItem);
+    }
+
+    private async Task CorrectVeganFoodName(MenuItem menuItem)
+    {
+        ChatCompletion completion = await _chatClient.CompleteChatAsync(
+            new SystemChatMessage(
+                "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet. Retten skal være omskrevet til at være vegansk, der må ikke være referencer til kød i retten."),
+            new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
+        
+        menuItem.VeganizedFoodName = completion.ToString();
     }
 
     private async Task DescribeFood(MenuItem menuItem)
@@ -74,9 +83,21 @@ public class AiService : BackgroundService
         ChatCompletion completion = await _chatClient.CompleteChatAsync(
             new SystemChatMessage(
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet."),
-            new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
+            new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
         menuItem.Description = completion.ToString();
+
+        await DescribeVeganFood(menuItem);
+    }
+
+    private async Task DescribeVeganFood(MenuItem menuItem)
+    {
+        ChatCompletion completion = await _chatClient.CompleteChatAsync(
+            new SystemChatMessage(
+                "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet. Det er en vegansk ret."),
+            new UserChatMessage($"Retten hedder \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\""));
+
+        menuItem.VeganizedDescription = completion.ToString();
     }
 
     private async Task ListFoodContents(MenuItem menuItem, IEnumerable<string> foodTypes)
@@ -87,7 +108,7 @@ public class AiService : BackgroundService
             ChatCompletion completion = await _chatClient.CompleteChatAsync(
                 new SystemChatMessage(
                     $"Din opgave er at afgøre om der er {foodType} i denne ret. Hvis den indeholder {foodType} skal du svare med \"ja\" og ikke andet. Hvis ikke den indeholder {foodType} skal du svare med \"nej\" og ikke andet."),
-                new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
+                new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
             if (completion.ToString().Equals("ja", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -98,11 +119,10 @@ public class AiService : BackgroundService
         menuItem.FoodContents = contents;
     }
 
-    private async Task GenerateImage(MenuItem menuItem, DashboardDbContext dbContext,
-        CancellationToken cancellationToken)
+    private async Task GenerateImages(MenuItem menuItem, DashboardDbContext dbContext,
+        CancellationToken cancellationToken = default)
     {
         var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
-        Directory.CreateDirectory(Path.Combine(basePath, "images", "food"));
         if (menuItem.Image is not null)
         {
             var path = Path.Combine(basePath, menuItem.Image.Path);
@@ -114,26 +134,57 @@ public class AiService : BackgroundService
             }
         }
 
-        var prompt = $"Food called \"{menuItem.FoodName}\"";
-        GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
+        await GenerateVeganImage(menuItem, dbContext, cancellationToken);
+
+        var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
+        menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
+    }
+
+    private async Task GenerateVeganImage(MenuItem menuItem, DashboardDbContext dbContext,
+        CancellationToken cancellationToken = default)
+    {
+        var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
+        if (menuItem.VeganizedImage is not null)
+        {
+            var path = Path.Combine(basePath, menuItem.VeganizedImage.Path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                dbContext.Remove(menuItem.VeganizedImage);
+                menuItem.VeganizedImage = null;
+            }
+        }
+        
+        var veganizedPrompt = $"Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
+        menuItem.VeganizedImage = await GenerateImage(veganizedPrompt, Path.Combine("images", "food", "vegan"), cancellationToken);
+    }
+
+    private async Task<Image> GenerateImage(string prompt, string folderPath, CancellationToken cancellationToken = default)
+    {
+        var image = new Image()
+        {
+            Path = "",
+            Prompt = prompt,
+        };
+        var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
+        var imagePath = Path.Combine(folderPath, $"{image.Id}.png");
+        var fullPath = Path.Combine(basePath, imagePath);
+        Directory.CreateDirectory(Path.Combine(basePath, folderPath));
+        
+        GeneratedImage generatedImage = await _imageClient.GenerateImageAsync(prompt,
             new ImageGenerationOptions
             {
                 Quality = GeneratedImageQuality.High,
                 Size = GeneratedImageSize.W1792xH1024,
                 ResponseFormat = GeneratedImageFormat.Bytes
             }, cancellationToken);
+        
+        await using FileStream stream = File.OpenWrite(fullPath);
+        await generatedImage.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
 
-        menuItem.Image = new Image
-        {
-            Path = "",
-            Prompt = prompt,
-            RevisedPrompt = image.RevisedPrompt
-        };
+        image.Path = imagePath;
+        image.RevisedPrompt = generatedImage.RevisedPrompt;
 
-        var imagePath = Path.Combine("images", "food", $"{menuItem.Image.Id}.png");
-        await using FileStream stream = File.OpenWrite(Path.Combine(basePath, imagePath));
-        await image.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
-
-        menuItem.Image.Path = imagePath.Replace('\\', '/');
+        return image;
     }
 }
