@@ -42,12 +42,9 @@ public class AiService : BackgroundService
 
             foreach (MenuItem menuItem in menuItems)
             {
-                await Task.WhenAll(CorrectFoodName(menuItem), DescribeFood(menuItem),
+                await CorrectFoodName(menuItem);
+                await Task.WhenAll(DescribeFood(menuItem),
                     ListFoodContents(menuItem, _foodTypes), GenerateImage(menuItem, dbContext, cancellationToken));
-                // await CorrectFoodName(menuItem);
-                // await DescribeFood(menuItem);
-                // await ListFoodContents(menuItem, _foodTypes);
-                // await GenerateImage(menuItem, dbContext, cancellationToken);
 
                 menuItem.Dirty = false;
                 _logger.LogDebug("Fixed the name and description of {Name} for {Date}", menuItem.FoodName,
@@ -67,6 +64,13 @@ public class AiService : BackgroundService
             new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
 
         menuItem.CorrectedFoodName = completion.ToString();
+        
+        completion = await _chatClient.CompleteChatAsync(
+            new SystemChatMessage(
+                "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet. Retten skal være omskrevet til at være vegansk, der må ikke være referencer til kød i retten."),
+            new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
+        
+        menuItem.VeganizedFoodName = completion.ToString();
     }
 
     private async Task DescribeFood(MenuItem menuItem)
@@ -74,9 +78,16 @@ public class AiService : BackgroundService
         ChatCompletion completion = await _chatClient.CompleteChatAsync(
             new SystemChatMessage(
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet."),
-            new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
+            new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
         menuItem.Description = completion.ToString();
+        
+        completion = await _chatClient.CompleteChatAsync(
+            new SystemChatMessage(
+                "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet. Det er en vegansk ret."),
+            new UserChatMessage($"Retten hedder \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\""));
+
+        menuItem.VeganizedDescription = completion.ToString();
     }
 
     private async Task ListFoodContents(MenuItem menuItem, IEnumerable<string> foodTypes)
@@ -87,7 +98,7 @@ public class AiService : BackgroundService
             ChatCompletion completion = await _chatClient.CompleteChatAsync(
                 new SystemChatMessage(
                     $"Din opgave er at afgøre om der er {foodType} i denne ret. Hvis den indeholder {foodType} skal du svare med \"ja\" og ikke andet. Hvis ikke den indeholder {foodType} skal du svare med \"nej\" og ikke andet."),
-                new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
+                new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
             if (completion.ToString().Equals("ja", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -114,7 +125,7 @@ public class AiService : BackgroundService
             }
         }
 
-        var prompt = $"Food called \"{menuItem.FoodName}\"";
+        var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
         GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
             new ImageGenerationOptions
             {
@@ -135,5 +146,22 @@ public class AiService : BackgroundService
         await image.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
 
         menuItem.Image.Path = imagePath.Replace('\\', '/');
+    }
+
+    private async Task<Image> GenerateImage(string prompt, string path, CancellationToken cancellationToken = default)
+    {
+        var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
+        var imagePath = Path.Combine(basePath, path);
+        Directory.CreateDirectory(imagePath);
+        
+        GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
+            new ImageGenerationOptions
+            {
+                Quality = GeneratedImageQuality.High,
+                Size = GeneratedImageSize.W1792xH1024,
+                ResponseFormat = GeneratedImageFormat.Bytes
+            }, cancellationToken);
+
+        return image;
     }
 }

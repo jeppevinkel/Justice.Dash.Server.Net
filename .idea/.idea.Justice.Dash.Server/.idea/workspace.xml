@@ -8,9 +8,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="Update gitignore">
-      <change afterPath="$PROJECT_DIR$/Justice.Dash.Server/appsettings.Development.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/DomicileController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/DomicileController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server.sln.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server.sln.DotSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/DataModels/MenuItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/DataModels/MenuItem.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Services/AiService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Services/AiService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/WeatherForecast.cs" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,6 +141,7 @@
       <workItem from="1725469637743" duration="10092000" />
       <workItem from="1725549815737" duration="18227000" />
       <workItem from="1725997343637" duration="3098000" />
+      <workItem from="1729257193897" duration="2014000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
