@@ -37,14 +37,23 @@ public class AiService : BackgroundService
             await using AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
             await using var dbContext = scope.ServiceProvider.GetRequiredService<DashboardDbContext>();
 
-            var menuItems = await dbContext.MenuItems.Include(it => it.Image).Where(it => it.Dirty)
+            foreach (MenuItem item in await dbContext.MenuItems.Include(it => it.VeganizedImage)
+                               .Where(it => it.VeganizedImage == null || it.VeganizedFoodName == null).Where(it => it.Date > DateOnly.FromDateTime(new DateTime())).ToListAsync(cancellationToken))
+            {
+                await CorrectVeganFoodName(item);
+                await Task.WhenAll(DescribeVeganFood(item),
+                    GenerateVeganImage(item, dbContext, cancellationToken));
+                await dbContext.SaveChangesAsync(cancellationToken);
+            }
+
+            var menuItems = await dbContext.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage).Where(it => it.Dirty)
                 .ToListAsync(cancellationToken);
 
             foreach (MenuItem menuItem in menuItems)
             {
                 await CorrectFoodName(menuItem);
                 await Task.WhenAll(DescribeFood(menuItem),
-                    ListFoodContents(menuItem, _foodTypes), GenerateImage(menuItem, dbContext, cancellationToken));
+                    ListFoodContents(menuItem, _foodTypes), GenerateImages(menuItem, dbContext, cancellationToken));
 
                 menuItem.Dirty = false;
                 _logger.LogDebug("Fixed the name and description of {Name} for {Date}", menuItem.FoodName,
@@ -64,8 +73,13 @@ public class AiService : BackgroundService
             new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
 
         menuItem.CorrectedFoodName = completion.ToString();
-        
-        completion = await _chatClient.CompleteChatAsync(
+
+        await CorrectVeganFoodName(menuItem);
+    }
+
+    private async Task CorrectVeganFoodName(MenuItem menuItem)
+    {
+        ChatCompletion completion = await _chatClient.CompleteChatAsync(
             new SystemChatMessage(
                 "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet. Retten skal være omskrevet til at være vegansk, der må ikke være referencer til kød i retten."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
@@ -81,8 +95,13 @@ public class AiService : BackgroundService
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
         menuItem.Description = completion.ToString();
-        
-        completion = await _chatClient.CompleteChatAsync(
+
+        await DescribeVeganFood(menuItem);
+    }
+
+    private async Task DescribeVeganFood(MenuItem menuItem)
+    {
+        ChatCompletion completion = await _chatClient.CompleteChatAsync(
             new SystemChatMessage(
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet. Det er en vegansk ret."),
             new UserChatMessage($"Retten hedder \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\""));
@@ -109,11 +128,10 @@ public class AiService : BackgroundService
         menuItem.FoodContents = contents;
     }
 
-    private async Task GenerateImage(MenuItem menuItem, DashboardDbContext dbContext,
+    private async Task GenerateImages(MenuItem menuItem, DashboardDbContext dbContext,
         CancellationToken cancellationToken = default)
     {
         var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
-        // Directory.CreateDirectory(Path.Combine(basePath, "images", "food"));
         if (menuItem.Image is not null)
         {
             var path = Path.Combine(basePath, menuItem.Image.Path);
@@ -124,6 +142,17 @@ public class AiService : BackgroundService
                 menuItem.Image = null;
             }
         }
+
+        await GenerateVeganImage(menuItem, dbContext, cancellationToken);
+
+        var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
+        menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
+    }
+
+    private async Task GenerateVeganImage(MenuItem menuItem, DashboardDbContext dbContext,
+        CancellationToken cancellationToken = default)
+    {
+        var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
         if (menuItem.VeganizedImage is not null)
         {
             var path = Path.Combine(basePath, menuItem.VeganizedImage.Path);
@@ -134,31 +163,9 @@ public class AiService : BackgroundService
                 menuItem.VeganizedImage = null;
             }
         }
-
-        var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
-        menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
+        
         var veganizedPrompt = $"Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
         menuItem.VeganizedImage = await GenerateImage(veganizedPrompt, Path.Combine("images", "food", "vegan"), cancellationToken);
-        // GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
-        //     new ImageGenerationOptions
-        //     {
-        //         Quality = GeneratedImageQuality.High,
-        //         Size = GeneratedImageSize.W1792xH1024,
-        //         ResponseFormat = GeneratedImageFormat.Bytes
-        //     }, cancellationToken);
-
-        // menuItem.Image = new Image
-        // {
-        //     Path = "",
-        //     Prompt = prompt,
-        //     RevisedPrompt = image.RevisedPrompt
-        // };
-
-        // var imagePath = Path.Combine("images", "food", $"{menuItem.Image.Id}.png");
-        // await using FileStream stream = File.OpenWrite(Path.Combine(basePath, imagePath));
-        // await image.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
-
-        // menuItem.Image.Path = imagePath.Replace('\\', '/');
     }
 
     private async Task<Image> GenerateImage(string prompt, string folderPath, CancellationToken cancellationToken = default)
