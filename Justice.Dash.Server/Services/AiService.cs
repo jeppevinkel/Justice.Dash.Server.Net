@@ -110,10 +110,10 @@ public class AiService : BackgroundService
     }
 
     private async Task GenerateImage(MenuItem menuItem, DashboardDbContext dbContext,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
-        Directory.CreateDirectory(Path.Combine(basePath, "images", "food"));
+        // Directory.CreateDirectory(Path.Combine(basePath, "images", "food"));
         if (menuItem.Image is not null)
         {
             var path = Path.Combine(basePath, menuItem.Image.Path);
@@ -124,43 +124,68 @@ public class AiService : BackgroundService
                 menuItem.Image = null;
             }
         }
+        if (menuItem.VeganizedImage is not null)
+        {
+            var path = Path.Combine(basePath, menuItem.VeganizedImage.Path);
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+                dbContext.Remove(menuItem.VeganizedImage);
+                menuItem.VeganizedImage = null;
+            }
+        }
 
         var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
-        GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
-            new ImageGenerationOptions
-            {
-                Quality = GeneratedImageQuality.High,
-                Size = GeneratedImageSize.W1792xH1024,
-                ResponseFormat = GeneratedImageFormat.Bytes
-            }, cancellationToken);
+        menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
+        var veganizedPrompt = $"Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
+        menuItem.VeganizedImage = await GenerateImage(veganizedPrompt, Path.Combine("images", "food", "vegan"), cancellationToken);
+        // GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
+        //     new ImageGenerationOptions
+        //     {
+        //         Quality = GeneratedImageQuality.High,
+        //         Size = GeneratedImageSize.W1792xH1024,
+        //         ResponseFormat = GeneratedImageFormat.Bytes
+        //     }, cancellationToken);
 
-        menuItem.Image = new Image
+        // menuItem.Image = new Image
+        // {
+        //     Path = "",
+        //     Prompt = prompt,
+        //     RevisedPrompt = image.RevisedPrompt
+        // };
+
+        // var imagePath = Path.Combine("images", "food", $"{menuItem.Image.Id}.png");
+        // await using FileStream stream = File.OpenWrite(Path.Combine(basePath, imagePath));
+        // await image.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
+
+        // menuItem.Image.Path = imagePath.Replace('\\', '/');
+    }
+
+    private async Task<Image> GenerateImage(string prompt, string folderPath, CancellationToken cancellationToken = default)
+    {
+        var image = new Image()
         {
             Path = "",
             Prompt = prompt,
-            RevisedPrompt = image.RevisedPrompt
         };
-
-        var imagePath = Path.Combine("images", "food", $"{menuItem.Image.Id}.png");
-        await using FileStream stream = File.OpenWrite(Path.Combine(basePath, imagePath));
-        await image.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
-
-        menuItem.Image.Path = imagePath.Replace('\\', '/');
-    }
-
-    private async Task<Image> GenerateImage(string prompt, string path, CancellationToken cancellationToken = default)
-    {
         var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
-        var imagePath = Path.Combine(basePath, path);
-        Directory.CreateDirectory(imagePath);
+        var imagePath = Path.Combine(folderPath, $"{image.Id}.png");
+        var fullPath = Path.Combine(basePath, imagePath);
+        Directory.CreateDirectory(Path.Combine(basePath, folderPath));
         
-        GeneratedImage image = await _imageClient.GenerateImageAsync(prompt,
+        GeneratedImage generatedImage = await _imageClient.GenerateImageAsync(prompt,
             new ImageGenerationOptions
             {
                 Quality = GeneratedImageQuality.High,
                 Size = GeneratedImageSize.W1792xH1024,
                 ResponseFormat = GeneratedImageFormat.Bytes
             }, cancellationToken);
+        
+        await using FileStream stream = File.OpenWrite(fullPath);
+        await generatedImage.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
+
+        image.Path = imagePath;
+        image.RevisedPrompt = generatedImage.RevisedPrompt;
 
         return image;
     }

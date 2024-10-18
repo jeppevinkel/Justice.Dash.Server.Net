@@ -9,7 +9,6 @@ namespace Justice.Dash.Server.Controllers;
 [Route("[controller]")]
 public class MenuController : ControllerBase
 {
-
     private readonly ILogger<MenuController> _logger;
     private readonly DashboardDbContext _context;
     private readonly IConfiguration _config;
@@ -26,20 +25,29 @@ public class MenuController : ControllerBase
     {
         var menuItems = full switch
         {
-            true => await _context.MenuItems.Include(it => it.Image).OrderBy(it => it.Date).ToListAsync(),
+            true => await _context.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage)
+                .OrderBy(it => it.Date).ToListAsync(),
             false => await _context.MenuItems.Include(it => it.Image)
+                .Include(it => it.VeganizedImage)
                 .Where(it => it.Date >= DateOnly.FromDateTime(DateTime.Today))
                 .OrderBy(it => it.Date)
                 .ToListAsync()
         };
-        
+
         var baseUrl = _config.GetValue<string>("BaseUrl");
         if (baseUrl is null) return menuItems;
         foreach (MenuItem menuItem in menuItems)
         {
-            if (menuItem.Image is null) continue;
-            var url = new Uri(Path.Combine(baseUrl, menuItem.Image.Path).Replace('\\', '/'));
-            menuItem.Image.Path = url.ToString();
+            if (menuItem.Image is not null)
+            {
+                var url = new Uri(Path.Combine(baseUrl, menuItem.Image.Path).Replace('\\', '/'));
+                menuItem.Image.Path = url.ToString();
+            }
+            if (menuItem.VeganizedImage is not null)
+            {
+                var url = new Uri(Path.Combine(baseUrl, menuItem.VeganizedImage.Path).Replace('\\', '/'));
+                menuItem.VeganizedImage.Path = url.ToString();
+            }
         }
 
         return menuItems;
