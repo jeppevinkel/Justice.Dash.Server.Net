@@ -137,7 +137,7 @@ public class AiService : BackgroundService
 
         await GenerateVeganImage(menuItem, dbContext, cancellationToken);
 
-        var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
+        var prompt = $"Photorealistic, Food called \"{menuItem.FoodDisplayName}\"";
         if (menuItem.Description is not null)
         {
             prompt += $" and described as \"{menuItem.Description}\"";
@@ -160,7 +160,7 @@ public class AiService : BackgroundService
             }
         }
         
-        var veganizedPrompt = $"Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
+        var veganizedPrompt = $"Photorealistic, Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
         if (menuItem.VeganizedDescription is not null)
         {
             veganizedPrompt += $" and described as \"{menuItem.VeganizedDescription}\"";
