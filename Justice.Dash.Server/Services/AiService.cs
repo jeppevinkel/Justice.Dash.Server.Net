@@ -43,7 +43,8 @@ public class AiService : BackgroundService
             foreach (MenuItem menuItem in menuItems)
             {
                 await CorrectFoodName(menuItem);
-                await Task.WhenAll(DescribeFood(menuItem),
+                await DescribeFood(menuItem);
+                await Task.WhenAll(
                     ListFoodContents(menuItem, _foodTypes), GenerateImages(menuItem, dbContext, cancellationToken));
 
                 menuItem.Dirty = false;
@@ -137,6 +138,10 @@ public class AiService : BackgroundService
         await GenerateVeganImage(menuItem, dbContext, cancellationToken);
 
         var prompt = $"Food called \"{menuItem.FoodDisplayName}\"";
+        if (menuItem.Description is not null)
+        {
+            prompt += $" and described as \"{menuItem.Description}\"";
+        }
         menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
     }
 
@@ -156,6 +161,10 @@ public class AiService : BackgroundService
         }
         
         var veganizedPrompt = $"Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
+        if (menuItem.VeganizedDescription is not null)
+        {
+            veganizedPrompt += $" and described as \"{menuItem.VeganizedDescription}\"";
+        }
         menuItem.VeganizedImage = await GenerateImage(veganizedPrompt, Path.Combine("images", "food", "vegan"), cancellationToken);
     }
 
