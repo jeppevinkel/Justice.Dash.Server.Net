@@ -14,6 +14,42 @@ public class AiService : BackgroundService
     private readonly ImageClient _imageClient;
     private readonly string[] _foodTypes = ["fisk", "svinekød", "kød", "laktosefri", "fjerkræ", "vegansk"];
 
+    private readonly string[] _foodModifiers =
+    [
+        "The food is heavily colored blue.",
+        "The food is heavily colored red.",
+        "The food is heavily colored green.",
+        "The food is heavily colored yellow.",
+        "The food is heavily colored purple.",
+        "The food is heavily colored white.",
+        "The food is heavily colored black.",
+        "The plate is presented in the style of Pixar.",
+        "The plate is presented in the style of Dream Works.",
+        "The plate is presented in the style of Disney.",
+        "The plate is presented in the style of an old analog VHS film.",
+        "The plate is presented in the style an image from the 18th century.",
+        "The plate is presented in the middle of the night.",
+        "The food is raw.",
+        "The food is burnt.",
+        "The food is from america.",
+        "The food is from south america.",
+        "The food is from africa.",
+        "The food is from asia.",
+        "The food is from antarctica.",
+        "The food is from the far future.",
+        "The food is from fantasy land.",
+        "The food is from post apocalyptic future.",
+        "The food is spread across the table.",
+        "The food is served on a lush forest floor.",
+        "The food is served deep down in the ocean.",
+        "The food is served in space.",
+        "The plating is weird.",
+        "The plating is very traditional.",
+        "The plating is upside down.",
+        "The plating is like a fine dining restaurant.",
+        "The plating is like a hearthy warm inn.",
+    ];
+
     public AiService(ILogger<AiService> logger, IServiceProvider serviceProvider, IConfiguration configuration,
         IWebHostEnvironment env)
     {
@@ -37,11 +73,13 @@ public class AiService : BackgroundService
             await using AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
             await using var dbContext = scope.ServiceProvider.GetRequiredService<DashboardDbContext>();
 
-            var menuItems = await dbContext.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage).Where(it => it.Dirty)
+            var menuItems = await dbContext.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage)
+                .Where(it => it.Dirty)
                 .ToListAsync(cancellationToken);
 
             foreach (MenuItem menuItem in menuItems)
             {
+                menuItem.FoodModifier = _foodModifiers[Random.Shared.Next(_foodModifiers.Length)];
                 await CorrectFoodName(menuItem);
                 await DescribeFood(menuItem);
                 await Task.WhenAll(
@@ -75,7 +113,7 @@ public class AiService : BackgroundService
             new SystemChatMessage(
                 "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet. Retten skal være omskrevet til at være vegansk, der må ikke være referencer til kød i retten."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
-        
+
         menuItem.VeganizedFoodName = completion.ToString();
     }
 
@@ -142,6 +180,12 @@ public class AiService : BackgroundService
         {
             prompt += $" and described as \"{menuItem.Description}\"";
         }
+
+        if (menuItem.FoodModifier is not null)
+        {
+            prompt += $" {menuItem.FoodModifier}";
+        }
+
         menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
     }
 
@@ -159,16 +203,25 @@ public class AiService : BackgroundService
                 menuItem.VeganizedImage = null;
             }
         }
-        
-        var veganizedPrompt = $"Photorealistic, Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
+
+        var veganizedPrompt =
+            $"Photorealistic, Food called \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\", the food is vegan.";
         if (menuItem.VeganizedDescription is not null)
         {
             veganizedPrompt += $" and described as \"{menuItem.VeganizedDescription}\"";
         }
-        menuItem.VeganizedImage = await GenerateImage(veganizedPrompt, Path.Combine("images", "food", "vegan"), cancellationToken);
+
+        if (menuItem.FoodModifier is not null)
+        {
+            veganizedPrompt += $" {menuItem.FoodModifier}";
+        }
+
+        menuItem.VeganizedImage =
+            await GenerateImage(veganizedPrompt, Path.Combine("images", "food", "vegan"), cancellationToken);
     }
 
-    private async Task<Image> GenerateImage(string prompt, string folderPath, CancellationToken cancellationToken = default)
+    private async Task<Image> GenerateImage(string prompt, string folderPath,
+        CancellationToken cancellationToken = default)
     {
         var image = new Image()
         {
@@ -179,7 +232,7 @@ public class AiService : BackgroundService
         var imagePath = Path.Combine(folderPath, $"{image.Id}.png");
         var fullPath = Path.Combine(basePath, imagePath);
         Directory.CreateDirectory(Path.Combine(basePath, folderPath));
-        
+
         GeneratedImage generatedImage = await _imageClient.GenerateImageAsync(prompt,
             new ImageGenerationOptions
             {
@@ -187,7 +240,7 @@ public class AiService : BackgroundService
                 Size = GeneratedImageSize.W1792xH1024,
                 ResponseFormat = GeneratedImageFormat.Bytes
             }, cancellationToken);
-        
+
         await using FileStream stream = File.OpenWrite(fullPath);
         await generatedImage.ImageBytes.ToStream().CopyToAsync(stream, cancellationToken);
 

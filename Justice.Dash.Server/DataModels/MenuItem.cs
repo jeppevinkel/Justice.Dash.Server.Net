@@ -16,6 +16,7 @@ public class MenuItem : BaseDataModel
     public Image? Image { get; set; }
     public Image? VeganizedImage { get; set; }
     public bool Dirty { get; set; } = true;
+    public string? FoodModifier { get; set; }
 
     [IgnoreDataMember]
     public string FoodDisplayName => CorrectedFoodName ?? FoodName;
