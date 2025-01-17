@@ -52,4 +52,17 @@ public class MenuController : ControllerBase
 
         return menuItems;
     }
+
+    [HttpGet(Name = "GetMenu"), Route("[controller]/regen")]
+    public async Task<IActionResult> PostAsync([FromQuery] string date)
+    {
+        var dateToMatch = DateOnly.Parse(date);
+        var menuItem = await _context.MenuItems.Where(it => it.Date.CompareTo(dateToMatch) >= 0).FirstAsync();
+
+        menuItem.Dirty = true;
+
+        var result = await _context.SaveChangesAsync();
+
+        return Ok(result);
+    }
 }
