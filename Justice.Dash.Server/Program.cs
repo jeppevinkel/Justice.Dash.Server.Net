@@ -23,6 +23,8 @@ public class Program
         builder.Services.AddHostedService<AiService>();
         builder.Services.AddHostedService<DomicileService>();
 
+        builder.Services.AddSingleton<StateService>();
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();

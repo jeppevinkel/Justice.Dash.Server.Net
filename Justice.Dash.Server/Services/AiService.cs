@@ -10,6 +10,7 @@ public class AiService : BackgroundService
     private readonly ILogger<AiService> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IWebHostEnvironment _env;
+    private readonly StateService _stateService;
     private readonly ChatClient _chatClient;
     private readonly ImageClient _imageClient;
     private readonly string[] _foodTypes = ["fisk", "svinekød", "kød", "laktosefri", "fjerkræ", "vegansk"];
@@ -51,7 +52,7 @@ public class AiService : BackgroundService
     ];
 
     public AiService(ILogger<AiService> logger, IServiceProvider serviceProvider, IConfiguration configuration,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env, StateService stateService)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
@@ -59,6 +60,7 @@ public class AiService : BackgroundService
         _chatClient = new ChatClient(model: "gpt-4o", configuration.GetValue<string>("Tokens:OpenAI") ?? string.Empty);
         _imageClient = new ImageClient(model: "dall-e-3",
             configuration.GetValue<string>("Tokens:OpenAI") ?? string.Empty);
+        _stateService = stateService;
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -91,7 +93,17 @@ public class AiService : BackgroundService
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);
-            await Task.Delay(TimeSpan.FromMinutes(60), cancellationToken);
+
+            var delayIterations = 0;
+            while (delayIterations++ < 120 && !cancellationToken.IsCancellationRequested)
+            {
+                if (_stateService.TriggerAiTasks)
+                {
+                    _stateService.TriggerAiTasks = false;
+                    break;
+                }
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 using Justice.Dash.Server.DataModels;
 using Justice.Dash.Server.Models;
+using Justice.Dash.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,12 +13,14 @@ public class MenuController : ControllerBase
     private readonly ILogger<MenuController> _logger;
     private readonly DashboardDbContext _context;
     private readonly IConfiguration _config;
+    private readonly StateService _stateService;
 
-    public MenuController(ILogger<MenuController> logger, DashboardDbContext context, IConfiguration config)
+    public MenuController(ILogger<MenuController> logger, DashboardDbContext context, IConfiguration config, StateService stateService)
     {
         _logger = logger;
         _context = context;
         _config = config;
+        _stateService = stateService;
     }
 
     [HttpGet(Name = "GetMenu")]
@@ -54,12 +57,13 @@ public class MenuController : ControllerBase
     }
 
     [HttpGet(Name = "GetMenu"), Route("[controller]/regen")]
-    public async Task<IActionResult> PostAsync([FromQuery] string date)
+    public async Task<IActionResult> RegenAsync([FromQuery] string date)
     {
         var dateToMatch = DateOnly.Parse(date);
         var menuItem = await _context.MenuItems.Where(it => it.Date.CompareTo(dateToMatch) >= 0).FirstAsync();
 
         menuItem.Dirty = true;
+        _stateService.TriggerAiTasks = true;
 
         var result = await _context.SaveChangesAsync();
 
