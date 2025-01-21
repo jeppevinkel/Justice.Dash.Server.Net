@@ -56,8 +56,8 @@ public class MenuController : ControllerBase
         return menuItems;
     }
 
-    [HttpGet(Name = "GetMenu"), Route("[controller]/regen")]
-    public async Task<IActionResult> RegenAsync([FromQuery] string date)
+    [HttpGet("regen/{date}", Name = "RegenMenuItem")]
+    public async Task<IActionResult> RegenAsync(string date)
     {
         var dateToMatch = DateOnly.Parse(date);
         var menuItem = await _context.MenuItems.Where(it => it.Date.CompareTo(dateToMatch) >= 0).FirstAsync();
