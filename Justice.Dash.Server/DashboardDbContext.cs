@@ -12,6 +12,8 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<MenuItem>().Navigation(it => it.Image).AutoInclude();
+        modelBuilder.Entity<MenuItem>().Navigation(it => it.VeganizedImage).AutoInclude();
         modelBuilder.Entity<MenuItem>().ToTable("menu_items").HasIndex(it => it.Date).IsUnique();
         modelBuilder.Entity<Image>().ToTable("images");
         modelBuilder.Entity<Photo>().ToTable("photos").HasIndex(it => it.Uid);

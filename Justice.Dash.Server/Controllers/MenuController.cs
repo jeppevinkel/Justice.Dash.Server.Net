@@ -29,11 +29,9 @@ public class MenuController : ControllerBase
     {
         var menuItems = full switch
         {
-            true => await _context.MenuItems.Include(it => it.Image).Include(it => it.VeganizedImage)
+            true => await _context.MenuItems
                 .OrderBy(it => it.Date).ToListAsync(),
-            false => await _context.MenuItems.Include(it => it.Image)
-                .Include(it => it.VeganizedImage)
-                .Where(it => it.Date >= DateOnly.FromDateTime(DateTime.Today))
+            false => await _context.MenuItems.Where(it => it.Date >= DateOnly.FromDateTime(DateTime.Today))
                 .OrderBy(it => it.Date)
                 .ToListAsync()
         };
