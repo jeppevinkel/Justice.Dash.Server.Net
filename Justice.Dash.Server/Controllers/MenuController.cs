@@ -61,8 +61,8 @@ public class MenuController : ControllerBase
     [HttpGet("regen/{date}", Name = "RegenMenuItem")]
     public async Task<IActionResult> RegenAsync(string date)
     {
-        var dateToMatch = DateOnly.Parse(date);
-        var menuItem = await _context.MenuItems.Where(it => it.Date.CompareTo(dateToMatch) >= 0).FirstAsync();
+        DateOnly dateToMatch = DateOnly.Parse(date);
+        MenuItem menuItem = await _context.MenuItems.Where(it => it.Date.CompareTo(dateToMatch) >= 0).FirstAsync();
 
         menuItem.NeedsImageRegeneration = true;
         _stateService.TriggerAiTasks = true;
@@ -78,10 +78,11 @@ public class MenuController : ControllerBase
         return Ok(MenuItem.FoodModifiers);
     }
 
-    [HttpPut("{id:guid}", Name = "UpdateMenuItem")]
-    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] MenuItemUpdate menuItemUpdate)
+    [HttpPut("{date}", Name = "UpdateMenuItem")]
+    public async Task<IActionResult> UpdateAsync(string date, [FromBody] MenuItemUpdate menuItemUpdate)
     {
-        var menuItem = await _context.MenuItems.FindAsync(id);
+        DateOnly dateToMatch = DateOnly.Parse(date);
+        MenuItem? menuItem = await _context.MenuItems.Where(it => it.Date.CompareTo(dateToMatch) >= 0).FirstOrDefaultAsync();
         if (menuItem == null)
             return NotFound();
 
