@@ -68,6 +68,7 @@ public class FoodAndCoService : BackgroundService
                                 Day = day.DayOfWeek,
                                 FoodName = day.Menus.First().Menu,
                                 WeekNumber = week.WeekNumber,
+                                FoodModifier = MenuItem.FoodModifiers[Random.Shared.Next(MenuItem.FoodModifiers.Length)],
                             };
 
                             await dbContext.MenuItems.AddAsync(menuItem, cancellationToken);
@@ -75,9 +76,16 @@ public class FoodAndCoService : BackgroundService
 
                         if (menuItem.FoodName != day.Menus.First().Menu)
                         {
-                            _logger.LogDebug("{Date} has been made dirty.", day.Date);
+                            _logger.LogDebug("{Date} has been made dirty", day.Date);
                             menuItem.FoodName = day.Menus.First().Menu;
-                            menuItem.Dirty = true;
+                            
+                            menuItem.NeedsNameCorrection = true;
+                            menuItem.NeedsVeganization = true;
+                            menuItem.NeedsDescription = true;
+                            menuItem.NeedsVeganDescription = true;
+                            menuItem.NeedsFoodContents = true;
+                            menuItem.NeedsImageRegeneration = true;
+                            menuItem.NeedsVeganImageRegeneration = true;
                         }
                     }
                     catch (Exception ex)
