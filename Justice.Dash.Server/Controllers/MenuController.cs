@@ -153,6 +153,8 @@ public class MenuController : ControllerBase
         {
             menuItem.NeedsFoodContents = true;
         }
+
+        await _context.SaveChangesAsync();
         
         var baseUrl = _config.GetValue<string>("BaseUrl");
         if (baseUrl is null) return Ok(menuItem);
@@ -167,8 +169,7 @@ public class MenuController : ControllerBase
             var url = new Uri(Path.Combine(baseUrl, menuItem.VeganizedImage.Path).Replace('\\', '/'));
             menuItem.VeganizedImage.Path = url.ToString();
         }
-
-        await _context.SaveChangesAsync();
+        
         return Ok(menuItem);
     }
 }
