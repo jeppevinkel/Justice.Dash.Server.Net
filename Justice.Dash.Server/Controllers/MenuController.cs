@@ -123,9 +123,10 @@ public class MenuController : ControllerBase
             menuItem.NeedsVeganDescription = false;
         }
 
-        if (menuItemUpdate.FoodModifier != null)
+        if (menuItemUpdate.FoodModifierId != null)
         {
-            menuItem.FoodModifier = menuItemUpdate.FoodModifier;
+            FoodModifier? foodModifier = await _context.FoodModifiers.FindAsync(menuItemUpdate.FoodModifierId);
+            menuItem.FoodModifier = foodModifier;
             menuItem.NeedsImageRegeneration = true;
             menuItem.NeedsVeganImageRegeneration = true;
         }

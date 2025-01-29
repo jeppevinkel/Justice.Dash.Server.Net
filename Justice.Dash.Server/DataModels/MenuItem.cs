@@ -15,7 +15,7 @@ public class MenuItem : BaseDataModel
     public List<string> FoodContents { get; set; } = [];
     public Image? Image { get; set; }
     public Image? VeganizedImage { get; set; }
-    public string? FoodModifier { get; set; }
+    public FoodModifier? FoodModifier { get; set; }
     public bool NeedsNameCorrection { get; set; } = true;
     public bool NeedsVeganization { get; set; } = true;
     public bool NeedsDescription { get; set; } = true;

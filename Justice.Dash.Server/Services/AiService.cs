@@ -203,7 +203,7 @@ public class AiService : BackgroundService
 
         if (menuItem.FoodModifier is not null)
         {
-            prompt += $" {menuItem.FoodModifier}";
+            prompt += $" {menuItem.FoodModifier.Description}";
         }
 
         menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
@@ -233,7 +233,7 @@ public class AiService : BackgroundService
 
         if (menuItem.FoodModifier is not null)
         {
-            veganizedPrompt += $" {menuItem.FoodModifier}";
+            veganizedPrompt += $" {menuItem.FoodModifier.Description}";
         }
 
         menuItem.VeganizedImage =

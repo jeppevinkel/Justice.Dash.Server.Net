@@ -7,7 +7,7 @@ public class MenuItemUpdate
     public string? VeganizedFoodName { get; set; }
     public string? Description { get; set; }
     public string? VeganizedDescription { get; set; }
-    public string? FoodModifier { get; set; }
+    public Guid? FoodModifierId { get; set; }
     public bool RegenerateImages { get; set; }
     public bool RegenerateDescriptions { get; set; }
     public bool RegenerateNames { get; set; }

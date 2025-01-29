@@ -62,13 +62,15 @@ public class FoodAndCoService : BackgroundService
 
                         if (menuItem is null)
                         {
+                            var foodModifiers =
+                                await dbContext.FoodModifiers.ToListAsync(cancellationToken: cancellationToken);
                             menuItem = new MenuItem
                             {
                                 Date = DateOnly.FromDateTime(day.Date),
                                 Day = day.DayOfWeek,
                                 FoodName = day.Menus.First().Menu,
                                 WeekNumber = week.WeekNumber,
-                                FoodModifier = MenuItem.FoodModifiers[Random.Shared.Next(MenuItem.FoodModifiers.Length)],
+                                FoodModifier = foodModifiers[Random.Shared.Next(foodModifiers.Count)],
                             };
 
                             await dbContext.MenuItems.AddAsync(menuItem, cancellationToken);
