@@ -70,12 +70,6 @@ public class MenuController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("modifiers", Name = "GetFoodModifiers")]
-    public IActionResult GetFoodModifiers()
-    {
-        return Ok(MenuItem.FoodModifiers);
-    }
-
     [HttpPut("{date}", Name = "UpdateMenuItem")]
     public async Task<IActionResult> UpdateAsync(string date, [FromBody] MenuItemUpdate menuItemUpdate)
     {
