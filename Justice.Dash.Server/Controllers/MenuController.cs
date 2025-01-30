@@ -119,8 +119,16 @@ public class MenuController : ControllerBase
 
         if (menuItemUpdate.FoodModifierId != null)
         {
-            FoodModifier? foodModifier = await _context.FoodModifiers.FindAsync(menuItemUpdate.FoodModifierId);
-            menuItem.FoodModifier = foodModifier;
+            if (menuItemUpdate.FoodModifierId == Guid.Empty)
+            {
+                menuItem.FoodModifier = null;
+            }
+            else
+            {
+                FoodModifier? foodModifier = await _context.FoodModifiers.FindAsync(menuItemUpdate.FoodModifierId);
+                menuItem.FoodModifier = foodModifier;
+            }
+            
             menuItem.NeedsImageRegeneration = true;
             menuItem.NeedsVeganImageRegeneration = true;
         }
