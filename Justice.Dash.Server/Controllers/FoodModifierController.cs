@@ -29,13 +29,26 @@ public class FoodModifierController : ControllerBase
         return await _context.FoodModifiers.ToListAsync();
     }
 
+    [HttpGet("{id:guid}", Name = "GetFoodModifier")]
+    public async Task<ActionResult<FoodModifier>> GetAsync(Guid id)
+    {
+        FoodModifier? foodModifier = await _context.FoodModifiers.FindAsync(id);
+        
+        if (foodModifier == null)
+        {
+            return NotFound();
+        }
+        
+        return new ObjectResult(foodModifier);
+    }
+
     [HttpPost(Name = "CreateFoodModifier")]
-    public async Task<ActionResult<FoodModifier>> CreateAsync(FoodModifier foodModifier)
+    public async Task<ActionResult<FoodModifier>> CreateAsync([FromBody] FoodModifier foodModifier)
     {
         _context.FoodModifiers.Add(foodModifier);
         await _context.SaveChangesAsync();
         
-        return CreatedAtAction(nameof(GetAsync), new { id = foodModifier.Id }, foodModifier);
+        return CreatedAtRoute("GetFoodModifier", new { id = foodModifier.Id }, foodModifier);
     }
 
     [HttpPut("{id:Guid}", Name = "UpdateFoodModifier")]
