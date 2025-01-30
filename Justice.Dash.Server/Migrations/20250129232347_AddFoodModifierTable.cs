@@ -85,6 +85,7 @@ namespace Justice.Dash.Server.Migrations
                     {Guid.NewGuid(), "Forest Floor", "The food is served on a lush forest floor."},
                     {Guid.NewGuid(), "Deep Ocean", "The food is served deep down in the ocean."},
                     {Guid.NewGuid(), "Space Dining", "The food is served in space."},
+                    {Guid.NewGuid(), "Rainbow Food", "The food is made of rainbows and sprinkles."},
                     {Guid.NewGuid(), "Weird Plating", "The plating is weird."},
                     {Guid.NewGuid(), "Traditional Plating", "The plating is very traditional."},
                     {Guid.NewGuid(), "Inverted Plating", "The plating is upside down."},
