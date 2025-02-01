@@ -59,6 +59,11 @@ public class FoodModifierController : ControllerBase
         if (foodModifier == null)
             return NotFound();
 
+        if (foodModifier.Description != foodModifierUpdate.Description)
+        {
+            await RefreshAffectedMenuItems(foodModifier);
+        }
+
         foodModifier.Title = foodModifierUpdate.Title;
         foodModifier.Description = foodModifierUpdate.Description;
         
@@ -85,9 +90,22 @@ public class FoodModifierController : ControllerBase
         if (foodModifier == null)
             return NotFound();
 
+        await RefreshAffectedMenuItems(foodModifier);
+
         _context.FoodModifiers.Remove(foodModifier);
         await _context.SaveChangesAsync();
         
         return NoContent();
+    }
+
+    private async Task RefreshAffectedMenuItems(FoodModifier foodModifier)
+    {
+        var affectedMenuItems = await _context.MenuItems.Where(it => it.FoodModifier == foodModifier).ToListAsync();
+        foreach (MenuItem menuItem in affectedMenuItems)
+        {
+            menuItem.FoodModifier = null;
+            menuItem.NeedsImageRegeneration = true;
+            menuItem.NeedsVeganImageRegeneration = true;
+        }
     }
 }
