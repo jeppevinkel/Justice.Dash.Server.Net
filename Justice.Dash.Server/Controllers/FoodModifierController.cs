@@ -1,4 +1,5 @@
 ﻿using Justice.Dash.Server.DataModels;
+using Justice.Dash.Server.Models;
 using Justice.Dash.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,21 +53,14 @@ public class FoodModifierController : ControllerBase
     }
 
     [HttpPut("{id:Guid}", Name = "UpdateFoodModifier")]
-    public async Task<IActionResult> UpdateAsync(Guid id, FoodModifier foodModifier)
+    public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] FoodModifierUpdate foodModifierUpdate)
     {
-        if (id != foodModifier.Id)
-        {
-            return BadRequest();
-        }
-
-        FoodModifier? existingModifier = await _context.FoodModifiers.FindAsync(id);
-        if (existingModifier == null)
-        {
+        FoodModifier? foodModifier = await _context.FoodModifiers.FindAsync(id);
+        if (foodModifier == null)
             return NotFound();
-        }
 
-        existingModifier.Title = foodModifier.Title;
-        existingModifier.Description = foodModifier.Description;
+        foodModifier.Title = foodModifierUpdate.Title;
+        foodModifier.Description = foodModifierUpdate.Description;
         
         try
         {
@@ -81,6 +75,19 @@ public class FoodModifierController : ControllerBase
             throw;
         }
 
+        return Ok(foodModifier);
+    }
+
+    [HttpDelete("{id:Guid}", Name = "DeleteFoodModifier")]
+    public async Task<IActionResult> DeleteAsync(Guid id)
+    {
+        FoodModifier? foodModifier = await _context.FoodModifiers.FindAsync(id);
+        if (foodModifier == null)
+            return NotFound();
+
+        _context.FoodModifiers.Remove(foodModifier);
+        await _context.SaveChangesAsync();
+        
         return NoContent();
     }
 }
