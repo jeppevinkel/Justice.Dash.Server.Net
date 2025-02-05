@@ -4,6 +4,7 @@ using Justice.Dash.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Justice.Dash.Server.Migrations
 {
     [DbContext(typeof(DashboardDbContext))]
-    partial class DashboardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250129232347_AddFoodModifierTable")]
+    partial class AddFoodModifierTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,6 @@ namespace Justice.Dash.Server.Migrations
 
                     b.Property<Guid?>("ImageId")
                         .HasColumnType("char(36)");
-
-                    b.Property<bool>("ManuallyModified")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("NeedsDescription")
                         .HasColumnType("tinyint(1)");

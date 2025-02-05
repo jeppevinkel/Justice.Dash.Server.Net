@@ -9,14 +9,19 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
     public DbSet<Image> Images { get; set; }
     public DbSet<Photo> Photos { get; set; }
     public DbSet<Surveillance> Surveillance { get; set; }
+    public DbSet<FoodModifier> FoodModifiers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<MenuItem>().Navigation(it => it.Image).AutoInclude();
+        modelBuilder.Entity<MenuItem>().Navigation(it => it.VeganizedImage).AutoInclude();
+        modelBuilder.Entity<MenuItem>().Navigation(it => it.FoodModifier).AutoInclude();
         modelBuilder.Entity<MenuItem>().ToTable("menu_items").HasIndex(it => it.Date).IsUnique();
         modelBuilder.Entity<Image>().ToTable("images");
         modelBuilder.Entity<Photo>().ToTable("photos").HasIndex(it => it.Uid);
         modelBuilder.Entity<Surveillance>().ToTable("surveillance").HasIndex([
             nameof(DataModels.Surveillance.Type), nameof(DataModels.Surveillance.Week), nameof(DataModels.Surveillance.Year)
         ]).IsUnique();
+        modelBuilder.Entity<FoodModifier>().ToTable("food_modifiers");
     }
 }
