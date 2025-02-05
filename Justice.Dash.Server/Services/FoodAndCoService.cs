@@ -76,7 +76,7 @@ public class FoodAndCoService : BackgroundService
                             await dbContext.MenuItems.AddAsync(menuItem, cancellationToken);
                         }
 
-                        if (menuItem.FoodName != day.Menus.First().Menu)
+                        if (!menuItem.ManuallyModified && menuItem.FoodName != day.Menus.First().Menu)
                         {
                             _logger.LogDebug("{Date} has been made dirty", day.Date);
                             menuItem.FoodName = day.Menus.First().Menu;

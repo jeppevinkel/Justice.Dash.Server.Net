@@ -43,14 +43,13 @@ public class AiService : BackgroundService
                 .Include(it => it.Image)
                 .Include(it => it.VeganizedImage)
                 .Where(it => 
-                    !it.ManuallyModified &&
-                    (it.NeedsNameCorrection || 
+                    it.NeedsNameCorrection || 
                     it.NeedsVeganization || 
                     it.NeedsDescription || 
                     it.NeedsVeganDescription || 
                     it.NeedsFoodContents || 
                     it.NeedsImageRegeneration || 
-                    it.NeedsVeganImageRegeneration))
+                    it.NeedsVeganImageRegeneration)
                 .ToListAsync(cancellationToken);
             
             foreach (MenuItem menuItem in menuItems)
