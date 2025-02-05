@@ -4,6 +4,7 @@ using Justice.Dash.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Justice.Dash.Server.Migrations
 {
     [DbContext(typeof(DashboardDbContext))]
-    partial class DashboardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250122204938_AddMenuUpdatingSupport")]
+    partial class AddMenuUpdatingSupport
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,24 +24,6 @@ namespace Justice.Dash.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
-
-            modelBuilder.Entity("Justice.Dash.Server.DataModels.FoodModifier", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("food_modifiers", (string)null);
-                });
 
             modelBuilder.Entity("Justice.Dash.Server.DataModels.Image", b =>
                 {
@@ -83,8 +68,8 @@ namespace Justice.Dash.Server.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("FoodModifierId")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("FoodModifier")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("FoodName")
                         .IsRequired()
@@ -92,9 +77,6 @@ namespace Justice.Dash.Server.Migrations
 
                     b.Property<Guid?>("ImageId")
                         .HasColumnType("char(36)");
-
-                    b.Property<bool>("ManuallyModified")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("NeedsDescription")
                         .HasColumnType("tinyint(1)");
@@ -133,8 +115,6 @@ namespace Justice.Dash.Server.Migrations
 
                     b.HasIndex("Date")
                         .IsUnique();
-
-                    b.HasIndex("FoodModifierId");
 
                     b.HasIndex("ImageId");
 
@@ -203,10 +183,6 @@ namespace Justice.Dash.Server.Migrations
 
             modelBuilder.Entity("Justice.Dash.Server.DataModels.MenuItem", b =>
                 {
-                    b.HasOne("Justice.Dash.Server.DataModels.FoodModifier", "FoodModifier")
-                        .WithMany()
-                        .HasForeignKey("FoodModifierId");
-
                     b.HasOne("Justice.Dash.Server.DataModels.Image", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
@@ -214,8 +190,6 @@ namespace Justice.Dash.Server.Migrations
                     b.HasOne("Justice.Dash.Server.DataModels.Image", "VeganizedImage")
                         .WithMany()
                         .HasForeignKey("VeganizedImageId");
-
-                    b.Navigation("FoodModifier");
 
                     b.Navigation("Image");
 
