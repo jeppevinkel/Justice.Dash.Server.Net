@@ -82,6 +82,7 @@ public class MenuController : ControllerBase
         if (menuItemUpdate.FoodName != null)
         {
             menuItem.FoodName = menuItemUpdate.FoodName;
+            menuItem.ManuallyModified = true;
             // When food name changes, we need to regenerate everything unless explicitly provided
             menuItem.NeedsNameCorrection = true;
             menuItem.NeedsVeganization = true;
