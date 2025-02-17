@@ -3,8 +3,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Justice.Dash.Server;
 
+/// <summary>
+/// Main entry point for the Justice.Dash.Server application.
+/// This class configures and initializes the web application, including database context,
+/// services, and HTTP pipeline middleware.
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Application entry point. Configures and starts the web server with all required services.
+    /// </summary>
+    /// <param name="args">Command line arguments passed to the application</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
