@@ -1,22 +1,81 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 
 namespace Justice.Dash.Server.DataModels;
 
+/// <summary>
+/// Represents a menu item in the system, including its original and modified versions,
+/// along with various states for content generation and modification.
+/// </summary>
 public class MenuItem : BaseDataModel
 {
+    /// <summary>
+    /// The date this menu item is scheduled for
+    /// </summary>
     public required DateOnly Date { get; set; }
+
+    /// <summary>
+    /// The day of the week this menu item is for
+    /// </summary>
     public required string Day { get; set; }
+
+    /// <summary>
+    /// The week number in the year for this menu item
+    /// </summary>
     public required int WeekNumber { get; set; }
+
+    /// <summary>
+    /// The original name of the food item
+    /// </summary>
     public required string FoodName { get; set; }
+
+    /// <summary>
+    /// The corrected/normalized name of the food item
+    /// </summary>
     public string? CorrectedFoodName { get; set; }
+
+    /// <summary>
+    /// The veganized version of the food name
+    /// </summary>
     public string? VeganizedFoodName { get; set; }
+
+    /// <summary>
+    /// Description of the original food item
+    /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Description of the veganized version
+    /// </summary>
     public string? VeganizedDescription { get; set; }
+
+    /// <summary>
+    /// List of ingredients or contents in the food item
+    /// </summary>
     public List<string> FoodContents { get; set; } = [];
+
+    /// <summary>
+    /// The image of the original food item
+    /// </summary>
     public Image? Image { get; set; }
+
+    /// <summary>
+    /// The image of the veganized version
+    /// </summary>
     public Image? VeganizedImage { get; set; }
+
+    /// <summary>
+    /// Optional modifier affecting the food's presentation
+    /// </summary>
     public FoodModifier? FoodModifier { get; set; }
+
+    /// <summary>
+    /// Indicates if the item has been manually modified
+    /// </summary>
     public bool ManuallyModified { get; set; } = false;
+
+    /// <summary>
+    /// Flags indicating whether various aspects need to be regenerated or updated
+    /// </summary>
     public bool NeedsNameCorrection { get; set; } = true;
     public bool NeedsVeganization { get; set; } = true;
     public bool NeedsDescription { get; set; } = true;
@@ -25,9 +84,15 @@ public class MenuItem : BaseDataModel
     public bool NeedsImageRegeneration { get; set; } = true;
     public bool NeedsVeganImageRegeneration { get; set; } = true;
 
+    /// <summary>
+    /// Gets the display name for the food item, using the corrected name if available, otherwise the original name
+    /// </summary>
     [IgnoreDataMember]
     public string FoodDisplayName => CorrectedFoodName ?? FoodName;
     
+    /// <summary>
+    /// Predefined list of food modifiers that can be applied to change the presentation of food items
+    /// </summary>
     public static readonly string[] FoodModifiers =
     [
         "The food is heavily colored blue.",
