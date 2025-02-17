@@ -1,16 +1,43 @@
-﻿using Justice.Dash.Server.DataModels;
+using Justice.Dash.Server.DataModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Justice.Dash.Server;
 
+/// <summary>
+/// Database context for the Justice.Dash application.
+/// Manages database interactions for menu items, images, photos, surveillance data, and food modifications.
+/// </summary>
 public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : DbContext(options)
 {
+    /// <summary>
+    /// Gets or sets the collection of menu items in the database
+    /// </summary>
     public DbSet<MenuItem> MenuItems { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the collection of images in the database
+    /// </summary>
     public DbSet<Image> Images { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the collection of photos in the database
+    /// </summary>
     public DbSet<Photo> Photos { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the collection of surveillance data in the database
+    /// </summary>
     public DbSet<Surveillance> Surveillance { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the collection of food modifiers in the database
+    /// </summary>
     public DbSet<FoodModifier> FoodModifiers { get; set; }
 
+    /// <summary>
+    /// Configures the database model including table names, relationships, and indexes
+    /// </summary>
+    /// <param name="modelBuilder">The model builder used to configure the database schema</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MenuItem>().Navigation(it => it.Image).AutoInclude();

@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Justice.Dash.Server.Controllers;
 
+/// <summary>
+/// Controller for managing menu-related operations including retrieving menu items,
+/// updating menu items, and triggering regeneration of menu item content.
+/// </summary>
 [ApiController]
 [Route("[controller]")]
 public class MenuController : ControllerBase
@@ -24,6 +28,11 @@ public class MenuController : ControllerBase
         _stateService = stateService;
     }
 
+    /// <summary>
+    /// Retrieves menu items from the database.
+    /// </summary>
+    /// <param name="full">When true, returns all menu items. When false, returns only menu items from today onwards.</param>
+    /// <returns>A collection of menu items with their associated images and data.</returns>
     [HttpGet(Name = "GetMenu")]
     public async Task<IEnumerable<MenuItem>> GetAsync([FromQuery] bool full = false)
     {
@@ -56,6 +65,11 @@ public class MenuController : ControllerBase
         return menuItems;
     }
 
+    /// <summary>
+    /// Triggers regeneration of a menu item for a specific date.
+    /// </summary>
+    /// <param name="date">The date of the menu item to regenerate</param>
+    /// <returns>Result of the regeneration request</returns>
     [HttpGet("regen/{date}", Name = "RegenMenuItem")]
     public async Task<IActionResult> RegenAsync(string date)
     {
@@ -70,6 +84,12 @@ public class MenuController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Updates a menu item for a specific date with new information.
+    /// </summary>
+    /// <param name="date">The date of the menu item to update</param>
+    /// <param name="menuItemUpdate">The update information containing new values for the menu item</param>
+    /// <returns>The updated menu item if successful, or NotFound if the menu item doesn't exist</returns>
     [HttpPut("{date}", Name = "UpdateMenuItem")]
     public async Task<IActionResult> UpdateAsync(string date, [FromBody] MenuItemUpdate menuItemUpdate)
     {
