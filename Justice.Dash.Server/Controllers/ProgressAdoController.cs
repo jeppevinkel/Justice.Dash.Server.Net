@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Justice.Dash.Server.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class ProgressAdoController : ControllerBase
 {
     private readonly ProgressAdoService _progressService;
