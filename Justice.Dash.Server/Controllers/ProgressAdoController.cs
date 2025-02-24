@@ -6,19 +6,19 @@ namespace Justice.Dash.Server.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProgressController : ControllerBase
+public class ProgressAdoController : ControllerBase
 {
-    private readonly ProgressService _progressService;
+    private readonly ProgressAdoService _progressService;
 
-    public ProgressController(ProgressService progressService)
+    public ProgressAdoController(ProgressAdoService progressService)
     {
         _progressService = progressService;
     }
 
     [HttpGet]
-    public async Task<ActionResult<Progress>> GetProgress()
+    public async Task<ActionResult<ProgressAdo>> GetProgress()
     {
-        var progress = await _progressService.GetProgressAsync();
+        ProgressAdo? progress = await _progressService.GetProgressAsync();
         if (progress == null)
         {
             return NotFound();
@@ -27,7 +27,7 @@ public class ProgressController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<Progress>> UpdateProgress([FromBody] ProgressUpdate update)
+    public async Task<ActionResult<ProgressAdo>> UpdateProgress([FromBody] ProgressUpdate update)
     {
         if (update.TotalItems < 0 || update.CompletedItems < 0 || update.CompletedItems > update.TotalItems)
         {

@@ -3,32 +3,32 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Justice.Dash.Server.Services;
 
-public class ProgressService
+public class ProgressAdoService
 {
     private readonly DashboardDbContext _dbContext;
 
-    public ProgressService(DashboardDbContext dbContext)
+    public ProgressAdoService(DashboardDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
-    public async Task<Progress?> GetProgressAsync()
+    public async Task<ProgressAdo?> GetProgressAsync()
     {
-        return await _dbContext.Progress.FirstOrDefaultAsync();
+        return await _dbContext.ProgressAdo.FirstOrDefaultAsync();
     }
 
-    public async Task<Progress> UpdateProgressAsync(int completedItems, int totalItems)
+    public async Task<ProgressAdo> UpdateProgressAsync(int completedItems, int totalItems)
     {
-        var progress = await _dbContext.Progress.FirstOrDefaultAsync();
+        var progress = await _dbContext.ProgressAdo.FirstOrDefaultAsync();
         
         if (progress == null)
         {
-            progress = new Progress
+            progress = new ProgressAdo
             {
                 CompletedItems = completedItems,
                 TotalItems = totalItems
             };
-            _dbContext.Progress.Add(progress);
+            _dbContext.ProgressAdo.Add(progress);
         }
         else
         {

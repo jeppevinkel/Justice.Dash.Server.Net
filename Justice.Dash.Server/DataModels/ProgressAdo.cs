@@ -1,6 +1,6 @@
 namespace Justice.Dash.Server.DataModels;
 
-public class Progress : BaseDataModel
+public class ProgressAdo : BaseDataModel
 {
     public int CompletedItems { get; set; }
     public int TotalItems { get; set; }

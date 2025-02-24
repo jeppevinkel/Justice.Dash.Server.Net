@@ -33,7 +33,7 @@ public class Program
         builder.Services.AddHostedService<DomicileService>();
 
         builder.Services.AddSingleton<StateService>();
-        builder.Services.AddScoped<ProgressService>();
+        builder.Services.AddScoped<ProgressAdoService>();
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

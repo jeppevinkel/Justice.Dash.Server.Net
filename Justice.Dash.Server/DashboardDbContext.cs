@@ -37,7 +37,7 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
     /// <summary>
     /// Gets or sets the collection of progress tracking data in the database
     /// </summary>
-    public DbSet<Progress> Progress { get; set; }
+    public DbSet<ProgressAdo> ProgressAdo { get; set; }
 
     /// <summary>
     /// Configures the database model including table names, relationships, and indexes
@@ -55,6 +55,6 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
             nameof(DataModels.Surveillance.Type), nameof(DataModels.Surveillance.Week), nameof(DataModels.Surveillance.Year)
         ]).IsUnique();
         modelBuilder.Entity<FoodModifier>().ToTable("food_modifiers");
-        modelBuilder.Entity<Progress>().ToTable("progress");
+        modelBuilder.Entity<ProgressAdo>().ToTable("progress_ado");
     }
 }
