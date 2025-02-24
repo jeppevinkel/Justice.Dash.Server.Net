@@ -33,6 +33,11 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
     /// Gets or sets the collection of food modifiers in the database
     /// </summary>
     public DbSet<FoodModifier> FoodModifiers { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the collection of progress tracking data in the database
+    /// </summary>
+    public DbSet<Progress> Progress { get; set; }
 
     /// <summary>
     /// Configures the database model including table names, relationships, and indexes
@@ -50,5 +55,6 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
             nameof(DataModels.Surveillance.Type), nameof(DataModels.Surveillance.Week), nameof(DataModels.Surveillance.Year)
         ]).IsUnique();
         modelBuilder.Entity<FoodModifier>().ToTable("food_modifiers");
+        modelBuilder.Entity<Progress>().ToTable("progress");
     }
 }
