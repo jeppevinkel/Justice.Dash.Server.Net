@@ -294,15 +294,18 @@ public class AiService : BackgroundService
         // Read the image file as base64
         byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
         string base64Image = Convert.ToBase64String(imageBytes);
-        
-        // Send the actual image to the AI for analysis
-        ChatCompletion completion = await _chatClient.CompleteChatAsync(
-            new SystemChatMessage(
-                "Your task is to create a detailed recipe for a dish based on the image provided. The recipe should match the content visible in the image, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
-            new UserChatMessage($"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
-            new ImageUrl(base64Image, "The generated food image"));
 
-        menuItem.Recipe = completion.ToString();
+        {
+            // Send the actual image to the AI for analysis
+            ChatCompletion completion = await _chatClient.CompleteChatAsync(
+                new SystemChatMessage(
+                    "Your task is to create a detailed recipe for a dish based on the image provided. The recipe should match the content visible in the image, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
+                new UserChatMessage(
+                    $"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
+                new UserChatMessage(ChatMessageContentPart.CreateImageMessageContentPart(new Uri(base64Image)), "The generated food image"));
+
+            menuItem.Recipe = completion.ToString();
+        }
     }
     
     private async Task<Image> GenerateImage(string prompt, string folderPath,
