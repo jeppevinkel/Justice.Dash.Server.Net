@@ -47,6 +47,11 @@ public class MenuItem : BaseDataModel
     /// Description of the veganized version
     /// </summary>
     public string? VeganizedDescription { get; set; }
+    
+    /// <summary>
+    /// Recipe for the food item
+    /// </summary>
+    public string? Recipe { get; set; }
 
     /// <summary>
     /// List of ingredients or contents in the food item
@@ -80,6 +85,7 @@ public class MenuItem : BaseDataModel
     public bool NeedsVeganization { get; set; } = true;
     public bool NeedsDescription { get; set; } = true;
     public bool NeedsVeganDescription { get; set; } = true;
+    public bool NeedsRecipeGeneration { get; set; } = true;
     public bool NeedsFoodContents { get; set; } = true;
     public bool NeedsImageRegeneration { get; set; } = true;
     public bool NeedsVeganImageRegeneration { get; set; } = true;

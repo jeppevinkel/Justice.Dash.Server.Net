@@ -1,4 +1,4 @@
-﻿namespace Justice.Dash.Server.Models;
+namespace Justice.Dash.Server.Models;
 
 public class MenuItemUpdate
 {
@@ -7,9 +7,11 @@ public class MenuItemUpdate
     public string? VeganizedFoodName { get; set; }
     public string? Description { get; set; }
     public string? VeganizedDescription { get; set; }
+    public string? Recipe { get; set; }
     public Guid? FoodModifierId { get; set; }
     public bool RegenerateImages { get; set; }
     public bool RegenerateDescriptions { get; set; }
     public bool RegenerateNames { get; set; }
+    public bool RegenerateRecipe { get; set; }
     public bool RegenerateFoodContents { get; set; }
 }

@@ -108,6 +108,7 @@ public class MenuController : ControllerBase
             menuItem.NeedsVeganization = true;
             menuItem.NeedsDescription = true;
             menuItem.NeedsVeganDescription = true;
+            menuItem.NeedsRecipeGeneration = true;
             menuItem.NeedsFoodContents = true;
             menuItem.NeedsImageRegeneration = true;
             menuItem.NeedsVeganImageRegeneration = true;
@@ -136,6 +137,12 @@ public class MenuController : ControllerBase
         {
             menuItem.VeganizedDescription = menuItemUpdate.VeganizedDescription;
             menuItem.NeedsVeganDescription = false;
+        }
+        
+        if (menuItemUpdate.Recipe != null)
+        {
+            menuItem.Recipe = menuItemUpdate.Recipe;
+            menuItem.NeedsRecipeGeneration = false;
         }
 
         if (menuItemUpdate.FoodModifierId != null)
@@ -173,6 +180,11 @@ public class MenuController : ControllerBase
             menuItem.NeedsVeganImageRegeneration = true;
         }
 
+        if (menuItemUpdate.RegenerateRecipe)
+        {
+            menuItem.NeedsRecipeGeneration = true;
+        }
+        
         if (menuItemUpdate.RegenerateFoodContents)
         {
             menuItem.NeedsFoodContents = true;
