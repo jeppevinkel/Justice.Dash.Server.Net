@@ -1,4 +1,4 @@
-﻿using Justice.Dash.Server.DataModels;
+using Justice.Dash.Server.DataModels;
 using Microsoft.EntityFrameworkCore;
 using OpenAI.Chat;
 using OpenAI.Images;
@@ -94,6 +94,12 @@ public class AiService : BackgroundService
         {
             await DescribeVeganFood(menuItem);
             menuItem.NeedsVeganDescription = false;
+        }
+        
+        if (menuItem.NeedsRecipeGeneration)
+        {
+            await GenerateRecipe(menuItem);
+            menuItem.NeedsRecipeGeneration = false;
         }
 
         if (menuItem.NeedsFoodContents)
@@ -207,6 +213,9 @@ public class AiService : BackgroundService
         }
 
         menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
+        
+        // After generating the image, set the flag to generate a recipe based on the image
+        menuItem.NeedsRecipeGeneration = true;
     }
 
     private async Task GenerateVeganImage(MenuItem menuItem, DashboardDbContext dbContext,
@@ -249,6 +258,26 @@ public class AiService : BackgroundService
         dbContext.Remove(image);
     }
 
+    private async Task GenerateRecipe(MenuItem menuItem)
+    {
+        // Check if we need to wait for the image to be generated first
+        if (menuItem.Image == null && menuItem.NeedsImageRegeneration)
+        {
+            // Skip for now, we'll generate the recipe after the image is generated
+            return;
+        }
+        
+        string imagePrompt = menuItem.Image?.RevisedPrompt ?? "";
+        string foodName = menuItem.FoodDisplayName;
+        
+        ChatCompletion completion = await _chatClient.CompleteChatAsync(
+            new SystemChatMessage(
+                "Your task is to create a detailed recipe for a dish. The recipe should match the content of the image that was generated, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
+            new UserChatMessage($"Create a recipe for \"{foodName}\". The generated image was based on this prompt: \"{imagePrompt}\""));
+
+        menuItem.Recipe = completion.ToString();
+    }
+    
     private async Task<Image> GenerateImage(string prompt, string folderPath,
         CancellationToken cancellationToken = default)
     {
