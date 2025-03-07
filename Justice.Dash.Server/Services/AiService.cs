@@ -2,6 +2,8 @@ using Justice.Dash.Server.DataModels;
 using Microsoft.EntityFrameworkCore;
 using OpenAI.Chat;
 using OpenAI.Images;
+using System.IO;
+using System.Text;
 
 namespace Justice.Dash.Server.Services;
 
@@ -267,13 +269,38 @@ public class AiService : BackgroundService
             return;
         }
         
-        string imagePrompt = menuItem.Image?.RevisedPrompt ?? "";
         string foodName = menuItem.FoodDisplayName;
         
+        // Get the path to the image file
+        var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
+        var imagePath = Path.Combine(basePath, menuItem.Image?.Path ?? "");
+        
+        if (menuItem.Image?.Path == null || !File.Exists(imagePath))
+        {
+            _logger.LogWarning("Image file not found at {Path} for recipe generation", imagePath);
+            
+            // Fallback to using the revised prompt if image is not available
+            string imagePrompt = menuItem.Image?.RevisedPrompt ?? "";
+            
+            ChatCompletion completion = await _chatClient.CompleteChatAsync(
+                new SystemChatMessage(
+                    "Your task is to create a detailed recipe for a dish. The recipe should match the content of the image that was generated, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
+                new UserChatMessage($"Create a recipe for \"{foodName}\". The generated image was based on this prompt: \"{imagePrompt}\""));
+
+            menuItem.Recipe = completion.ToString();
+            return;
+        }
+        
+        // Read the image file as base64
+        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
+        string base64Image = Convert.ToBase64String(imageBytes);
+        
+        // Send the actual image to the AI for analysis
         ChatCompletion completion = await _chatClient.CompleteChatAsync(
             new SystemChatMessage(
-                "Your task is to create a detailed recipe for a dish. The recipe should match the content of the image that was generated, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
-            new UserChatMessage($"Create a recipe for \"{foodName}\". The generated image was based on this prompt: \"{imagePrompt}\""));
+                "Your task is to create a detailed recipe for a dish based on the image provided. The recipe should match the content visible in the image, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
+            new UserChatMessage($"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
+            new ImageUrl(base64Image, "The generated food image"));
 
         menuItem.Recipe = completion.ToString();
     }
