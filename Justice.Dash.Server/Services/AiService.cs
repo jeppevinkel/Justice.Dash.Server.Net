@@ -1,7 +1,9 @@
-﻿using Justice.Dash.Server.DataModels;
+using Justice.Dash.Server.DataModels;
 using Microsoft.EntityFrameworkCore;
 using OpenAI.Chat;
 using OpenAI.Images;
+using System.IO;
+using System.Text;
 
 namespace Justice.Dash.Server.Services;
 
@@ -49,7 +51,8 @@ public class AiService : BackgroundService
                     it.NeedsVeganDescription || 
                     it.NeedsFoodContents || 
                     it.NeedsImageRegeneration || 
-                    it.NeedsVeganImageRegeneration)
+                    it.NeedsVeganImageRegeneration || 
+                    it.NeedsRecipeGeneration)
                 .ToListAsync(cancellationToken);
             
             foreach (MenuItem menuItem in menuItems)
@@ -113,6 +116,12 @@ public class AiService : BackgroundService
             await GenerateVeganImage(menuItem, dbContext, cancellationToken);
             menuItem.NeedsVeganImageRegeneration = false;
         }
+        
+        if (menuItem.NeedsRecipeGeneration)
+        {
+            await GenerateRecipe(menuItem);
+            menuItem.NeedsRecipeGeneration = false;
+        }
 
         _logger.LogDebug("Processed updates for menu item {Name} for {Date}", menuItem.FoodName, menuItem.Date);
     }
@@ -124,7 +133,7 @@ public class AiService : BackgroundService
                 "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
 
-        menuItem.CorrectedFoodName = completion.ToString();
+        menuItem.CorrectedFoodName = completion.Content[0].Text;
 
         await CorrectVeganFoodName(menuItem);
     }
@@ -136,7 +145,7 @@ public class AiService : BackgroundService
                 "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet. Retten skal være omskrevet til at være vegansk, der må ikke være referencer til kød i retten."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
-        menuItem.VeganizedFoodName = completion.ToString();
+        menuItem.VeganizedFoodName = completion.Content[0].Text;
     }
 
     private async Task DescribeFood(MenuItem menuItem)
@@ -146,7 +155,7 @@ public class AiService : BackgroundService
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
-        menuItem.Description = completion.ToString();
+        menuItem.Description = completion.Content[0].Text;
 
         await DescribeVeganFood(menuItem);
     }
@@ -158,7 +167,7 @@ public class AiService : BackgroundService
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet. Det er en vegansk ret."),
             new UserChatMessage($"Retten hedder \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\""));
 
-        menuItem.VeganizedDescription = completion.ToString();
+        menuItem.VeganizedDescription = completion.Content[0].Text;
     }
 
     private async Task ListFoodContents(MenuItem menuItem, IEnumerable<string> foodTypes)
@@ -171,7 +180,7 @@ public class AiService : BackgroundService
                     $"Din opgave er at afgøre om der er {foodType} i denne ret. Hvis den indeholder {foodType} skal du svare med \"ja\" og ikke andet. Hvis ikke den indeholder {foodType} skal du svare med \"nej\" og ikke andet."),
                 new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
-            if (completion.ToString().Equals("ja", StringComparison.CurrentCultureIgnoreCase))
+            if (completion.Content[0].Text.Equals("ja", StringComparison.CurrentCultureIgnoreCase))
             {
                 contents.Add(foodType);
             }
@@ -207,6 +216,9 @@ public class AiService : BackgroundService
         }
 
         menuItem.Image = await GenerateImage(prompt, Path.Combine("images", "food"), cancellationToken);
+        
+        // After generating the image, set the flag to generate a recipe based on the image
+        menuItem.NeedsRecipeGeneration = true;
     }
 
     private async Task GenerateVeganImage(MenuItem menuItem, DashboardDbContext dbContext,
@@ -249,6 +261,53 @@ public class AiService : BackgroundService
         dbContext.Remove(image);
     }
 
+    private async Task GenerateRecipe(MenuItem menuItem)
+    {
+        // Check if we need to wait for the image to be generated first
+        if (menuItem.Image == null && menuItem.NeedsImageRegeneration)
+        {
+            // Skip for now, we'll generate the recipe after the image is generated
+            return;
+        }
+        
+        string foodName = menuItem.FoodDisplayName;
+        
+        // Get the path to the image file
+        var basePath = Path.Combine(_env.ContentRootPath, "wwwroot");
+        var imagePath = Path.Combine(basePath, menuItem.Image?.Path ?? "");
+        
+        if (menuItem.Image?.Path == null || !File.Exists(imagePath))
+        {
+            _logger.LogWarning("Image file not found at {Path} for recipe generation", imagePath);
+            
+            // Fallback to using the revised prompt if image is not available
+            string imagePrompt = menuItem.Image?.RevisedPrompt ?? "";
+            
+            ChatCompletion completion = await _chatClient.CompleteChatAsync(
+                new SystemChatMessage(
+                    "Your task is to create a detailed recipe for a dish. The recipe should match the content of the image that was generated, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions.. Only provide the recipe and ingredient list, do not include any conversation message."),
+                new UserChatMessage($"Create a recipe for \"{foodName}\". The generated image was based on this prompt: \"{imagePrompt}\""));
+
+            menuItem.Recipe = completion.Content[0].Text;
+            return;
+        }
+        
+        await using Stream imageStream = File.OpenRead(imagePath);
+        BinaryData imageBytes = await BinaryData.FromStreamAsync(imageStream);
+
+        {
+            // Send the actual image to the AI for analysis
+            ChatCompletion completion = await _chatClient.CompleteChatAsync(
+                new SystemChatMessage(
+                    "Your task is to create a detailed recipe for a dish based on the image provided. The recipe should match the content visible in the image, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions. Only provide the recipe and ingredient list, do not include any conversation message."),
+                new UserChatMessage(
+                    $"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
+                new UserChatMessage(ChatMessageContentPart.CreateImagePart(imageBytes, "image/png"), "The generated food image"));
+            
+            menuItem.Recipe = completion.Content[0].Text;
+        }
+    }
+    
     private async Task<Image> GenerateImage(string prompt, string folderPath,
         CancellationToken cancellationToken = default)
     {
