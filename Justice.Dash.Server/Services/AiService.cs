@@ -51,7 +51,8 @@ public class AiService : BackgroundService
                     it.NeedsVeganDescription || 
                     it.NeedsFoodContents || 
                     it.NeedsImageRegeneration || 
-                    it.NeedsVeganImageRegeneration)
+                    it.NeedsVeganImageRegeneration || 
+                    it.NeedsRecipeGeneration)
                 .ToListAsync(cancellationToken);
             
             foreach (MenuItem menuItem in menuItems)
@@ -97,12 +98,6 @@ public class AiService : BackgroundService
             await DescribeVeganFood(menuItem);
             menuItem.NeedsVeganDescription = false;
         }
-        
-        if (menuItem.NeedsRecipeGeneration)
-        {
-            await GenerateRecipe(menuItem);
-            menuItem.NeedsRecipeGeneration = false;
-        }
 
         if (menuItem.NeedsFoodContents)
         {
@@ -120,6 +115,12 @@ public class AiService : BackgroundService
         {
             await GenerateVeganImage(menuItem, dbContext, cancellationToken);
             menuItem.NeedsVeganImageRegeneration = false;
+        }
+        
+        if (menuItem.NeedsRecipeGeneration)
+        {
+            await GenerateRecipe(menuItem);
+            menuItem.NeedsRecipeGeneration = false;
         }
 
         _logger.LogDebug("Processed updates for menu item {Name} for {Date}", menuItem.FoodName, menuItem.Date);
