@@ -133,7 +133,7 @@ public class AiService : BackgroundService
                 "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
 
-        menuItem.CorrectedFoodName = completion.ToString();
+        menuItem.CorrectedFoodName = completion.Content[0].Text;
 
         await CorrectVeganFoodName(menuItem);
     }
@@ -145,7 +145,7 @@ public class AiService : BackgroundService
                 "Din opgave er at omskrive navnet på madretter til at være grammatisk korrekt og stavet rigtigt. Undgå at slutte med tegnsætning. Forkortelser må gerne bruges eller bibeholdes. Du skal kun svare med navnet og intet andet. Retten skal være omskrevet til at være vegansk, der må ikke være referencer til kød i retten."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
-        menuItem.VeganizedFoodName = completion.ToString();
+        menuItem.VeganizedFoodName = completion.Content[0].Text;
     }
 
     private async Task DescribeFood(MenuItem menuItem)
@@ -155,7 +155,7 @@ public class AiService : BackgroundService
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet."),
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
-        menuItem.Description = completion.ToString();
+        menuItem.Description = completion.Content[0].Text;
 
         await DescribeVeganFood(menuItem);
     }
@@ -167,7 +167,7 @@ public class AiService : BackgroundService
                 "Din opgave er at beskrive madretter på en kort måde. Du skal svare med kun beskrivelsen og intet andet. Det er en vegansk ret."),
             new UserChatMessage($"Retten hedder \"{menuItem.VeganizedFoodName ?? menuItem.FoodDisplayName}\""));
 
-        menuItem.VeganizedDescription = completion.ToString();
+        menuItem.VeganizedDescription = completion.Content[0].Text;
     }
 
     private async Task ListFoodContents(MenuItem menuItem, IEnumerable<string> foodTypes)
@@ -180,7 +180,7 @@ public class AiService : BackgroundService
                     $"Din opgave er at afgøre om der er {foodType} i denne ret. Hvis den indeholder {foodType} skal du svare med \"ja\" og ikke andet. Hvis ikke den indeholder {foodType} skal du svare med \"nej\" og ikke andet."),
                 new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
-            if (completion.ToString().Equals("ja", StringComparison.CurrentCultureIgnoreCase))
+            if (completion.Content[0].Text.Equals("ja", StringComparison.CurrentCultureIgnoreCase))
             {
                 contents.Add(foodType);
             }
@@ -288,13 +288,12 @@ public class AiService : BackgroundService
                     "Your task is to create a detailed recipe for a dish. The recipe should match the content of the image that was generated, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
                 new UserChatMessage($"Create a recipe for \"{foodName}\". The generated image was based on this prompt: \"{imagePrompt}\""));
 
-            menuItem.Recipe = completion.ToString();
+            menuItem.Recipe = completion.Content[0].Text;
             return;
         }
         
-        // Read the image file as base64
-        byte[] imageBytes = await File.ReadAllBytesAsync(imagePath);
-        string base64Image = Convert.ToBase64String(imageBytes);
+        await using Stream imageStream = File.OpenRead(imagePath);
+        BinaryData imageBytes = await BinaryData.FromStreamAsync(imageStream);
 
         {
             // Send the actual image to the AI for analysis
@@ -303,9 +302,9 @@ public class AiService : BackgroundService
                     "Your task is to create a detailed recipe for a dish based on the image provided. The recipe should match the content visible in the image, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions."),
                 new UserChatMessage(
                     $"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
-                new UserChatMessage(ChatMessageContentPart.CreateImageMessageContentPart(new Uri(base64Image)), "The generated food image"));
-
-            menuItem.Recipe = completion.ToString();
+                new UserChatMessage(ChatMessageContentPart.CreateImagePart(imageBytes, "image/png"), "The generated food image"));
+            Console.WriteLine(completion.Content[0].Text);
+            menuItem.Recipe = completion.Content[0].Text;
         }
     }
     
