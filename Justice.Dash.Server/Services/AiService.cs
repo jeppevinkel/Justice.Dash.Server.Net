@@ -303,7 +303,7 @@ public class AiService : BackgroundService
                 new UserChatMessage(
                     $"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
                 new UserChatMessage(ChatMessageContentPart.CreateImagePart(imageBytes, "image/png"), "The generated food image"));
-            Console.WriteLine(completion.Content[0].Text);
+            
             menuItem.Recipe = completion.Content[0].Text;
         }
     }
