@@ -285,8 +285,8 @@ public class AiService : BackgroundService
             
             ChatCompletion completion = await _chatClient.CompleteChatAsync(
                 new SystemChatMessage(
-                    "Your task is to create a detailed recipe for a dish. The recipe should match the content of the image that was generated, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions.. Only provide the recipe and ingredient list, do not include any conversation message."),
-                new UserChatMessage($"Create a recipe for \"{foodName}\". The generated image was based on this prompt: \"{imagePrompt}\""));
+                    "Din opgave er at skabe en detaljeret opskrift på en ret. Opskriften skal matche indholdet af det genererede billede, selv om det virker upraktisk at lave i virkeligheden. Vær kreativ og inkluder utraditionelle ingredienser eller teknikker, hvis de fremgår af billedet. Inkluder en liste over ingredienser med mål og trin-for-trin tilberedningsinstruktioner. Giv kun opskriften og ingredienslisten, inkluder ikke nogen samtalebesked."),
+                new UserChatMessage($"Lav en opskrift for \"{foodName}\". Det genererede billede er baseret på denne prompt: \"{imagePrompt}\""));
 
             menuItem.Recipe = completion.Content[0].Text;
             return;
@@ -299,9 +299,9 @@ public class AiService : BackgroundService
             // Send the actual image to the AI for analysis
             ChatCompletion completion = await _chatClient.CompleteChatAsync(
                 new SystemChatMessage(
-                    "Your task is to create a detailed recipe for a dish based on the image provided. The recipe should match the content visible in the image, even if it seems impractical to actually make. Be creative and include unconventional ingredients or techniques if they appear in the image. Include a list of ingredients with measurements and step-by-step cooking instructions. Only provide the recipe and ingredient list, do not include any conversation message."),
+                    "Din opgave er at lave en detaljeret opskrift på en ret baseret på det givne billede. Opskriften skal matche indholdet, der er synligt på billedet, selv hvis det virker upraktisk at lave i virkeligheden. Vær kreativ og inkluder utraditionelle ingredienser eller teknikker, hvis de fremgår af billedet. Inkluder en liste over ingredienser med mængdeangivelser og trin-for-trin tilberedningsinstruktioner. Giv kun opskriften og ingredienslisten, inkluder ikke nogen samtalebesked."),
                 new UserChatMessage(
-                    $"Create a recipe for \"{foodName}\". Analyze the attached image and create a recipe that matches what you see."),
+                    $"Lav en opskrift for \"{foodName}\". Analyser det vedhæftede billede og lav en opskrift der passer til indholdet."),
                 new UserChatMessage(ChatMessageContentPart.CreateImagePart(imageBytes, "image/png"), "The generated food image"));
             
             menuItem.Recipe = completion.Content[0].Text;
