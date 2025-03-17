@@ -31,7 +31,9 @@ public class Program
         builder.Services.AddHostedService<FoodAndCoService>();
         builder.Services.AddHostedService<AiService>();
         builder.Services.AddHostedService<DomicileService>();
+        builder.Services.AddHostedService<NetatmoService>();
 
+        builder.Services.AddSingleton<NetatmoService>();
         builder.Services.AddSingleton<StateService>();
         builder.Services.AddScoped<ProgressAdoService>();
 
