@@ -16,14 +16,9 @@ public class NetatmoConfig
     public string ClientSecret { get; set; } = string.Empty;
     
     /// <summary>
-    /// Netatmo account username (email)
+    /// Netatmo account access token (oauth2)
     /// </summary>
-    public string Username { get; set; } = string.Empty;
-    
-    /// <summary>
-    /// Netatmo account password
-    /// </summary>
-    public string Password { get; set; } = string.Empty;
+    public string AccessToken { get; set; } = string.Empty;
     
     /// <summary>
     /// Refresh token for Netatmo API (if available)

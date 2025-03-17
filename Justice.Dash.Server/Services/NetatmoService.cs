@@ -1,7 +1,10 @@
 using Justice.Dash.Server.Models;
 using Netatmo;
 using Netatmo.Models.Client;
-using Netatmo.Models.Weather;
+using Netatmo.Models.Client.Weather;
+using Netatmo.Models.Client.Weather.StationsData;
+using Netatmo.Models.Client.Weather.StationsData.DashboardData;
+using NodaTime;
 
 namespace Justice.Dash.Server.Services;
 
@@ -12,7 +15,7 @@ public class NetatmoService : IHostedService
 {
     private readonly ILogger<NetatmoService> _logger;
     private readonly IConfiguration _configuration;
-    private NetatmoClient? _client;
+    private Client? _client;
     private Timer? _timer;
     private WeatherResponse _lastWeatherData = new() 
     { 
@@ -62,14 +65,11 @@ public class NetatmoService : IHostedService
             }
             
             // Initialize client
-            _client = new NetatmoClient(new NetatmoClientOptions 
-            {
-                ClientId = _config.ClientId,
-                ClientSecret = _config.ClientSecret,
-                Username = _config.Username,
-                Password = _config.Password,
-                RefreshToken = _config.RefreshToken
-            });
+            _client = new Client(SystemClock.Instance, "https://api.netatmo.com/",
+                _config.StationId,
+                _config.ClientSecret);
+            
+            _client.ProvideOAuth2Token(_config.AccessToken, _config.RefreshToken);
             
             // Update once immediately then schedule regular updates
             _ = FetchWeatherDataAsync();
@@ -110,18 +110,18 @@ public class NetatmoService : IHostedService
             _logger.LogInformation("Fetching weather data from Netatmo API");
             
             // Get station data
-            StationsData stationsData = await _client.Weather.GetStationsData();
+            DataResponse<GetStationsDataBody> stationsData = await _client.Weather.GetStationsData();
             
             // Find the main station or the configured station if provided
             Device? station = null;
             
             if (!string.IsNullOrEmpty(_config.StationId))
             {
-                station = stationsData.Devices.FirstOrDefault(d => d.Id == _config.StationId);
+                station = stationsData.Body.Devices.FirstOrDefault(d => d.Id == _config.StationId);
             }
             
             // Use the first station if no specific one is configured or found
-            station ??= stationsData.Devices.FirstOrDefault();
+            station ??= stationsData.Body.Devices.FirstOrDefault();
             
             if (station == null)
             {
@@ -130,10 +130,12 @@ public class NetatmoService : IHostedService
             }
             
             // Find rain module if available
-            Module? rainModule = station.Modules.FirstOrDefault(m => m.Type.Equals("NAModule3", StringComparison.OrdinalIgnoreCase));
+            var rainModule = station.Modules.FirstOrDefault(m => m.Type.Equals("NAModule3", StringComparison.OrdinalIgnoreCase));
+            var rainGaugeDashBoardData = rainModule?.GetDashboardData<RainGaugeDashBoardData>();
             
             // Find outdoor module for other metrics if available
-            Module? outdoorModule = station.Modules.FirstOrDefault(m => m.Type.Equals("NAModule1", StringComparison.OrdinalIgnoreCase));
+            var outdoorModule = station.Modules.FirstOrDefault(m => m.Type.Equals("NAModule1", StringComparison.OrdinalIgnoreCase));
+            var outdoorDashboardData = outdoorModule?.GetDashboardData<OutdoorDashBoardData>();
             
             // Update weather data
             _lastWeatherData = new WeatherResponse
@@ -142,19 +144,19 @@ public class NetatmoService : IHostedService
             };
             
             // Check for rain data
-            if (rainModule != null && rainModule.DashboardData != null)
+            if (rainModule is not null && rainGaugeDashBoardData is not null)
             {
-                _lastWeatherData.RainAmount = rainModule.DashboardData.Rain;
+                _lastWeatherData.RainAmount = rainGaugeDashBoardData.Rain;
                 
                 // Consider it's raining if rain amount is greater than 0.1 mm/hour
-                _lastWeatherData.IsRaining = rainModule.DashboardData.Rain > 0.1;
+                _lastWeatherData.IsRaining = rainGaugeDashBoardData.Rain > 0.1;
             }
             
             // Add outdoor temperature and humidity if available
-            if (outdoorModule != null && outdoorModule.DashboardData != null)
+            if (outdoorModule is not null && outdoorDashboardData is not null)
             {
-                _lastWeatherData.Temperature = outdoorModule.DashboardData.Temperature;
-                _lastWeatherData.Humidity = outdoorModule.DashboardData.Humidity;
+                _lastWeatherData.Temperature = outdoorDashboardData.Temperature;
+                _lastWeatherData.Humidity = outdoorDashboardData.HumidityPercent;
             }
             
             _logger.LogInformation("Weather data updated. Is raining: {IsRaining}, Rain amount: {RainAmount} mm/h", 
