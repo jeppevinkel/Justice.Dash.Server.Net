@@ -19,7 +19,7 @@ public class ProgressAdoService
 
     public async Task<ProgressAdo?> GetGhProgressAsync()
     {
-        return await _dbContext.ProgressAdo.FirstOrDefaultAsync(it => it.Id == new Guid("59e00891-af5b-4e2d-b641-bc56fe78d17b"));
+        return await _dbContext.ProgressAdo.FirstOrDefaultAsync(it => it.Id == Guid.Parse("59e00891-af5b-4e2d-b641-bc56fe78d17b"));
     }
 
     public async Task<ProgressAdo> UpdateProgressAsync(int completedItems, int totalItems)
@@ -47,13 +47,13 @@ public class ProgressAdoService
 
     public async Task<ProgressAdo> UpdateGhProgressAsync(int completedItems, int totalItems)
     {
-        var progress = await _dbContext.ProgressAdo.FirstOrDefaultAsync(it => it.Id == new Guid("59e00891-af5b-4e2d-b641-bc56fe78d17b"));
+        var progress = await _dbContext.ProgressAdo.FirstOrDefaultAsync(it => it.Id == Guid.Parse("59e00891-af5b-4e2d-b641-bc56fe78d17b"));
         
         if (progress == null)
         {
             progress = new ProgressAdo
             {
-                Id = new Guid("59e00891-af5b-4e2d-b641-bc56fe78d17b"),
+                Id = Guid.Parse("59e00891-af5b-4e2d-b641-bc56fe78d17b"),
                 CompletedItems = completedItems,
                 TotalItems = totalItems
             };
