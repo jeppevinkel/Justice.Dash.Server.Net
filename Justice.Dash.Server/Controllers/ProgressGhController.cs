@@ -18,7 +18,7 @@ public class ProgressGhController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ProgressAdo>> GetProgress()
     {
-        ProgressAdo? progress = await _progressService.GetProgressAsync();
+        ProgressAdo? progress = await _progressService.GetGhProgressAsync();
         if (progress == null)
         {
             return NotFound();

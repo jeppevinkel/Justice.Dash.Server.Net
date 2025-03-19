@@ -17,6 +17,11 @@ public class ProgressAdoService
         return await _dbContext.ProgressAdo.FirstOrDefaultAsync();
     }
 
+    public async Task<ProgressAdo?> GetGhProgressAsync()
+    {
+        return await _dbContext.ProgressAdo.FirstOrDefaultAsync(it => it.Id == new Guid("59e00891-af5b-4e2d-b641-bc56fe78d17b"));
+    }
+
     public async Task<ProgressAdo> UpdateProgressAsync(int completedItems, int totalItems)
     {
         var progress = await _dbContext.ProgressAdo.FirstOrDefaultAsync();
