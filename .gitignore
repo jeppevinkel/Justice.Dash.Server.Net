@@ -5,3 +5,4 @@ riderModule.iml
 /_ReSharper.Caches/
 /Justice.Dash.Server/appsettings.Development.json
 /Justice.Dash.Server/wwwroot/images
+/Justice.Dash.Server/credentials/
