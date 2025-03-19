@@ -1,9 +1,6 @@
-namespace Justice.Dash.Server.Models;
+﻿namespace Justice.Dash.Server.DataModels;
 
-/// <summary>
-/// Response model for weather data
-/// </summary>
-public class WeatherResponse
+public class Weather : BaseDataModel
 {
     /// <summary>
     /// Indicates if it is currently raining

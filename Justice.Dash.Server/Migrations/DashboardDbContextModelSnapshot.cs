@@ -223,6 +223,31 @@ namespace Justice.Dash.Server.Migrations
                     b.ToTable("surveillance", (string)null);
                 });
 
+            modelBuilder.Entity("Justice.Dash.Server.DataModels.Weather", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("char(36)");
+
+                    b.Property<double?>("Humidity")
+                        .HasColumnType("double");
+
+                    b.Property<bool>("IsRaining")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime>("LastUpdate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<double?>("RainAmount")
+                        .HasColumnType("double");
+
+                    b.Property<double?>("Temperature")
+                        .HasColumnType("double");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("weather", (string)null);
+                });
+
             modelBuilder.Entity("Justice.Dash.Server.DataModels.MenuItem", b =>
                 {
                     b.HasOne("Justice.Dash.Server.DataModels.FoodModifier", "FoodModifier")

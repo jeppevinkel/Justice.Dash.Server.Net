@@ -1,6 +1,8 @@
+using Justice.Dash.Server.DataModels;
 using Justice.Dash.Server.Models;
 using Justice.Dash.Server.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Justice.Dash.Server.Controllers;
 
@@ -8,21 +10,23 @@ namespace Justice.Dash.Server.Controllers;
 /// Controller for retrieving weather data from Netatmo
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class WeatherController : ControllerBase
 {
     private readonly NetatmoService _netatmoService;
     private readonly ILogger<WeatherController> _logger;
+    private readonly DashboardDbContext _context;
 
     /// <summary>
     /// Constructor for WeatherController
     /// </summary>
     /// <param name="netatmoService">Service for accessing Netatmo weather data</param>
     /// <param name="logger">Logger instance</param>
-    public WeatherController(NetatmoService netatmoService, ILogger<WeatherController> logger)
+    public WeatherController(NetatmoService netatmoService, ILogger<WeatherController> logger, DashboardDbContext context)
     {
         _netatmoService = netatmoService;
         _logger = logger;
+        _context = context;
     }
 
     /// <summary>
@@ -30,11 +34,11 @@ public class WeatherController : ControllerBase
     /// </summary>
     /// <returns>Weather data including if it's raining</returns>
     [HttpGet]
-    public ActionResult<WeatherResponse> GetWeather()
+    public async Task<ActionResult<Weather>> GetWeather()
     {
         try
         {
-            return Ok(_netatmoService.GetWeather());
+            return Ok(await _context.Weather.FirstOrDefaultAsync());
         }
         catch (Exception ex)
         {
@@ -48,11 +52,11 @@ public class WeatherController : ControllerBase
     /// </summary>
     /// <returns>True if it's raining, false otherwise</returns>
     [HttpGet("isRaining")]
-    public ActionResult<bool> IsRaining()
+    public async Task<ActionResult<bool>> IsRaining()
     {
         try
         {
-            var weather = _netatmoService.GetWeather();
+            var weather = await _context.Weather.FirstOrDefaultAsync();
             return Ok(weather.IsRaining);
         }
         catch (Exception ex)

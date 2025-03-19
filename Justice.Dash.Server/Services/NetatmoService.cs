@@ -1,10 +1,15 @@
+using Justice.Dash.Server.DataModels;
 using Justice.Dash.Server.Models;
+using Microsoft.EntityFrameworkCore;
 using Netatmo;
+using Netatmo.Models;
 using Netatmo.Models.Client;
 using Netatmo.Models.Client.Weather;
 using Netatmo.Models.Client.Weather.StationsData;
 using Netatmo.Models.Client.Weather.StationsData.DashboardData;
+using Newtonsoft.Json;
 using NodaTime;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Justice.Dash.Server.Services;
 
@@ -15,13 +20,10 @@ public class NetatmoService : IHostedService
 {
     private readonly ILogger<NetatmoService> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IWebHostEnvironment _env;
+    private readonly IServiceProvider _serviceProvider;
     private Client? _client;
     private Timer? _timer;
-    private WeatherResponse _lastWeatherData = new() 
-    { 
-        IsRaining = false, 
-        LastUpdate = DateTime.UtcNow 
-    };
     private NetatmoConfig _config = new();
     
     /// <summary>
@@ -29,19 +31,14 @@ public class NetatmoService : IHostedService
     /// </summary>
     /// <param name="logger">Logger instance</param>
     /// <param name="configuration">Configuration instance</param>
-    public NetatmoService(ILogger<NetatmoService> logger, IConfiguration configuration)
+    /// <param name="env">WebHost environment</param>
+    /// <param name="context">Database context</param>
+    public NetatmoService(ILogger<NetatmoService> logger, IConfiguration configuration, IWebHostEnvironment env, IServiceProvider serviceProvider)
     {
         _logger = logger;
         _configuration = configuration;
-    }
-
-    /// <summary>
-    /// Returns the most recent weather data
-    /// </summary>
-    /// <returns>Weather response containing rain information</returns>
-    public WeatherResponse GetWeather()
-    {
-        return _lastWeatherData;
+        _env = env;
+        _serviceProvider = serviceProvider;
     }
 
     /// <summary>
@@ -49,7 +46,7 @@ public class NetatmoService : IHostedService
     /// </summary>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Task representing the asynchronous operation</returns>
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting Netatmo Service");
         
@@ -57,19 +54,37 @@ public class NetatmoService : IHostedService
         {
             // Load configuration
             _config = _configuration.GetSection("Netatmo").Get<NetatmoConfig>() ?? new NetatmoConfig();
+
+            string accessToken;
+            string refreshToken;
+
+            if (File.Exists(CredentialsFilePath))
+            {
+                var tokenData = await File.ReadAllTextAsync(CredentialsFilePath, cancellationToken);
+                var token = JsonSerializer.Deserialize<NetatmoToken>(tokenData);
+
+                accessToken = token!.AccessToken;
+                refreshToken = token.RefreshToken;
+            }
+            else
+            {
+                accessToken = _config.AccessToken;
+                refreshToken = _config.RefreshToken;
+            }
             
             if (string.IsNullOrEmpty(_config.ClientId) || string.IsNullOrEmpty(_config.ClientSecret))
             {
-                _logger.LogWarning("Netatmo API credentials not configured. Service will not fetch data.");
-                return Task.CompletedTask;
+                _logger.LogWarning("Netatmo API credentials not configured. Service will not fetch data");
+                return;
             }
             
             // Initialize client
             _client = new Client(SystemClock.Instance, "https://api.netatmo.com/",
-                _config.StationId,
+                _config.ClientId,
                 _config.ClientSecret);
             
-            _client.ProvideOAuth2Token(_config.AccessToken, _config.RefreshToken);
+            _client.ProvideOAuth2Token(accessToken, refreshToken);
+            await RefreshToken(cancellationToken);
             
             // Update once immediately then schedule regular updates
             _ = FetchWeatherDataAsync();
@@ -81,8 +96,6 @@ public class NetatmoService : IHostedService
         {
             _logger.LogError(ex, "Error initializing Netatmo service");
         }
-        
-        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -99,10 +112,15 @@ public class NetatmoService : IHostedService
     
     private async Task FetchWeatherDataAsync()
     {
-        if (_client == null)
+        if (_client is null)
         {
             _logger.LogWarning("Netatmo client not initialized");
             return;
+        }
+
+        if (_client.CredentialManager.CredentialToken.ExpiresAt > SystemClock.Instance.GetCurrentInstant())
+        {
+            await RefreshToken();
         }
         
         try
@@ -136,36 +154,61 @@ public class NetatmoService : IHostedService
             // Find outdoor module for other metrics if available
             var outdoorModule = station.Modules.FirstOrDefault(m => m.Type.Equals("NAModule1", StringComparison.OrdinalIgnoreCase));
             var outdoorDashboardData = outdoorModule?.GetDashboardData<OutdoorDashBoardData>();
-            
-            // Update weather data
-            _lastWeatherData = new WeatherResponse
+
+            AsyncServiceScope scope = _serviceProvider.CreateAsyncScope();
+            await using var context = scope.ServiceProvider.GetRequiredService<DashboardDbContext>();
+
+            Weather? weatherData = await context.Weather.FirstOrDefaultAsync();
+
+            if (weatherData is null)
             {
-                LastUpdate = DateTime.UtcNow
-            };
+                weatherData = new Weather();
+                await context.Weather.AddAsync(weatherData);
+            }
+
+            // Update weather data
+            weatherData.LastUpdate = DateTime.UtcNow;
             
             // Check for rain data
             if (rainModule is not null && rainGaugeDashBoardData is not null)
             {
-                _lastWeatherData.RainAmount = rainGaugeDashBoardData.Rain;
+                weatherData.RainAmount = rainGaugeDashBoardData.Rain;
                 
                 // Consider it's raining if rain amount is greater than 0.1 mm/hour
-                _lastWeatherData.IsRaining = rainGaugeDashBoardData.Rain > 0.1;
+                weatherData.IsRaining = rainGaugeDashBoardData.Rain > 0.1;
             }
             
             // Add outdoor temperature and humidity if available
             if (outdoorModule is not null && outdoorDashboardData is not null)
             {
-                _lastWeatherData.Temperature = outdoorDashboardData.Temperature;
-                _lastWeatherData.Humidity = outdoorDashboardData.HumidityPercent;
+                weatherData.Temperature = outdoorDashboardData.Temperature;
+                weatherData.Humidity = outdoorDashboardData.HumidityPercent;
             }
             
             _logger.LogInformation("Weather data updated. Is raining: {IsRaining}, Rain amount: {RainAmount} mm/h", 
-                _lastWeatherData.IsRaining, 
-                _lastWeatherData.RainAmount);
+                weatherData.IsRaining, 
+                weatherData.RainAmount);
+
+            await context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error fetching weather data from Netatmo");
         }
     }
+
+    private async Task RefreshToken(CancellationToken cancellationToken = default)
+    {
+        if (_client is null)
+        {
+            throw new Exception("Client must be defined before refreshing the token.");
+        }
+        
+        await _client.RefreshToken();
+
+        var tokenData = JsonSerializer.Serialize(new NetatmoToken(_client.CredentialManager.CredentialToken));
+        await File.WriteAllTextAsync(CredentialsFilePath, tokenData, cancellationToken);
+    }
+
+    private string CredentialsFilePath => Path.Combine(_env.ContentRootPath, "credentials", "netatmo.json");
 }
