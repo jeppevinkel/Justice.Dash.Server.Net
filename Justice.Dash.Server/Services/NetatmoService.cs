@@ -205,6 +205,8 @@ public class NetatmoService : IHostedService
         }
         
         await _client.RefreshToken();
+        
+        Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "credentials"));
 
         var tokenData = JsonSerializer.Serialize(new NetatmoToken(_client.CredentialManager.CredentialToken));
         await File.WriteAllTextAsync(CredentialsFilePath, tokenData, cancellationToken);
