@@ -70,6 +70,8 @@ public class NetatmoService : IHostedService
             {
                 accessToken = _config.AccessToken;
                 refreshToken = _config.RefreshToken;
+
+                await SaveToken(new NetatmoToken {AccessToken = accessToken, RefreshToken = refreshToken}, cancellationToken);
             }
             
             if (string.IsNullOrEmpty(_config.ClientId) || string.IsNullOrEmpty(_config.ClientSecret))
@@ -205,10 +207,14 @@ public class NetatmoService : IHostedService
         }
         
         await _client.RefreshToken();
-        
-        Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "credentials"));
 
-        var tokenData = JsonSerializer.Serialize(new NetatmoToken(_client.CredentialManager.CredentialToken));
+        await SaveToken(new NetatmoToken(_client.CredentialManager.CredentialToken), cancellationToken);
+    }
+
+    private async Task SaveToken(NetatmoToken token, CancellationToken cancellationToken = default)
+    {
+        Directory.CreateDirectory(Path.Combine(_env.ContentRootPath, "credentials"));
+        var tokenData = JsonSerializer.Serialize(token);
         await File.WriteAllTextAsync(CredentialsFilePath, tokenData, cancellationToken);
     }
 

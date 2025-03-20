@@ -28,16 +28,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="credentials\" />
       <Folder Include="wwwroot\images\domicile\" />
       <Folder Include="wwwroot\images\food\" />
     </ItemGroup>
 
     <ItemGroup>
       <Content Remove="credentials\netatmo.json" />
-      <None Include="credentials\netatmo.json">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
     </ItemGroup>
 
 </Project>
