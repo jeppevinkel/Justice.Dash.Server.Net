@@ -300,14 +300,14 @@ public class SurveillanceController : ControllerBase
     [HttpDelete("day-overrides/{id:guid}", Name = "DeleteDayOverride")]
     public async Task<ActionResult> DeleteDayOverrideAsync(Guid id)
     {
-        var override = await _context.SurveillanceDayOverrides.FindAsync(id);
+        var dayOverride = await _context.SurveillanceDayOverrides.FindAsync(id);
         
-        if (override == null)
+        if (dayOverride == null)
         {
             return NotFound($"Surveillance day override with ID {id} not found.");
         }
 
-        _context.SurveillanceDayOverrides.Remove(override);
+        _context.SurveillanceDayOverrides.Remove(dayOverride);
         await _context.SaveChangesAsync();
         
         return NoContent();
