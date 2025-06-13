@@ -256,7 +256,7 @@ public class SurveillanceController : ControllerBase
         {
             var duplicateExists = await _context.SurveillanceDayOverrides
                 .AnyAsync(o => o.Id != id && o.Date == dayOverride.Date && o.Type == dayOverride.Type);
-                
+            
             if (duplicateExists)
             {
                 return Conflict($"An override for {dayOverride.Type} on {dayOverride.Date} already exists.");
