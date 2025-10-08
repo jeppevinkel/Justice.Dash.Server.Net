@@ -79,48 +79,56 @@ public class AiService : BackgroundService
         {
             await CorrectFoodName(menuItem);
             menuItem.NeedsNameCorrection = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         if (menuItem.NeedsVeganization)
         {
             await CorrectVeganFoodName(menuItem);
             menuItem.NeedsVeganization = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         if (menuItem.NeedsDescription)
         {
             await DescribeFood(menuItem);
             menuItem.NeedsDescription = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         if (menuItem.NeedsVeganDescription)
         {
             await DescribeVeganFood(menuItem);
             menuItem.NeedsVeganDescription = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         if (menuItem.NeedsFoodContents)
         {
             await ListFoodContents(menuItem, _foodTypes);
             menuItem.NeedsFoodContents = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         if (menuItem.NeedsImageRegeneration)
         {
             await GenerateRegularImage(menuItem, dbContext, cancellationToken);
             menuItem.NeedsImageRegeneration = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         if (menuItem.NeedsVeganImageRegeneration)
         {
             await GenerateVeganImage(menuItem, dbContext, cancellationToken);
             menuItem.NeedsVeganImageRegeneration = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
         
         if (menuItem.NeedsRecipeGeneration)
         {
             await GenerateRecipe(menuItem);
             menuItem.NeedsRecipeGeneration = false;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
         _logger.LogDebug("Processed updates for menu item {Name} for {Date}", menuItem.FoodName, menuItem.Date);
