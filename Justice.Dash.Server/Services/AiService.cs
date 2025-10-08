@@ -24,7 +24,7 @@ public class AiService : BackgroundService
         _serviceProvider = serviceProvider;
         _env = env;
         _chatClient = new ChatClient(model: "gpt-4o", configuration.GetValue<string>("Tokens:OpenAI") ?? string.Empty);
-        _imageClient = new ImageClient(model: "dall-e-3",
+        _imageClient = new ImageClient(model: "gpt-image-1",
             configuration.GetValue<string>("Tokens:OpenAI") ?? string.Empty);
         _stateService = stateService;
     }
@@ -324,9 +324,10 @@ public class AiService : BackgroundService
         GeneratedImage generatedImage = await _imageClient.GenerateImageAsync(prompt,
             new ImageGenerationOptions
             {
-                Quality = GeneratedImageQuality.High,
-                Size = GeneratedImageSize.W1792xH1024,
-                ResponseFormat = GeneratedImageFormat.Bytes
+                Quality = new GeneratedImageQuality("high"),
+#pragma warning disable OPENAI001
+                Size = GeneratedImageSize.W1024xH1536,
+#pragma warning restore OPENAI001
             }, cancellationToken);
 
         await using FileStream stream = File.OpenWrite(fullPath);
