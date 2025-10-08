@@ -4,3 +4,39 @@ GET {{Justice.Dash.Server_HostAddress}}/menu/
 Accept: application/json
 
 ###
+
+### Get Surveillance Schedule (default: current week and beyond)
+GET {{Justice.Dash.Server_HostAddress}}/surveillance/
+Accept: application/json
+
+### Get Full Surveillance Schedule
+GET {{Justice.Dash.Server_HostAddress}}/surveillance?full=true
+Accept: application/json
+
+### Create New Surveillance Entry
+POST {{Justice.Dash.Server_HostAddress}}/surveillance/
+Content-Type: application/json
+
+{
+  "type": "MDM",
+  "week": 42,
+  "year": 2023,
+  "responsible": "John Doe"
+}
+
+### Update Surveillance Entry
+PUT {{Justice.Dash.Server_HostAddress}}/surveillance/00000000-0000-0000-0000-000000000000
+Content-Type: application/json
+
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "type": "MDM",
+  "week": 42,
+  "year": 2023,
+  "responsible": "Jane Smith"
+}
+
+### Delete Surveillance Entry
+DELETE {{Justice.Dash.Server_HostAddress}}/surveillance/00000000-0000-0000-0000-000000000000
+
+###
