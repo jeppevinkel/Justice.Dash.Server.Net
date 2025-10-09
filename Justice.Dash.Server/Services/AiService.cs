@@ -334,7 +334,7 @@ public class AiService : BackgroundService
             {
                 Quality = new GeneratedImageQuality("high"),
 #pragma warning disable OPENAI001
-                Size = GeneratedImageSize.W1024xH1536,
+                Size = GeneratedImageSize.W1536xH1024,
 #pragma warning restore OPENAI001
             }, cancellationToken);
 
