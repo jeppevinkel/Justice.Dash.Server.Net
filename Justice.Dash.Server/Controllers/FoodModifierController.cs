@@ -109,7 +109,6 @@ public class FoodModifierController : ControllerBase
             }
             
             menuItem.NeedsImageRegeneration = true;
-            menuItem.NeedsVeganImageRegeneration = true;
         }
     }
 }

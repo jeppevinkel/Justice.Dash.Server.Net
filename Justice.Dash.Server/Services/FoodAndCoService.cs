@@ -82,12 +82,9 @@ public class FoodAndCoService : BackgroundService
                             menuItem.FoodName = day.Menus.First().Menu;
                             
                             menuItem.NeedsNameCorrection = true;
-                            menuItem.NeedsVeganization = true;
                             menuItem.NeedsDescription = true;
-                            menuItem.NeedsVeganDescription = true;
                             menuItem.NeedsFoodContents = true;
                             menuItem.NeedsImageRegeneration = true;
-                            menuItem.NeedsVeganImageRegeneration = true;
                         }
                     }
                     catch (Exception ex)

@@ -84,7 +84,7 @@ public class AiService : BackgroundService
 
         if (menuItem.NeedsVeganization)
         {
-            await CorrectVeganFoodName(menuItem);
+            // Veganization disabled: do not generate new veganized names
             menuItem.NeedsVeganization = false;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -98,7 +98,7 @@ public class AiService : BackgroundService
 
         if (menuItem.NeedsVeganDescription)
         {
-            await DescribeVeganFood(menuItem);
+            // Veganization disabled: do not generate new veganized descriptions
             menuItem.NeedsVeganDescription = false;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -119,7 +119,7 @@ public class AiService : BackgroundService
 
         if (menuItem.NeedsVeganImageRegeneration)
         {
-            await GenerateVeganImage(menuItem, dbContext, cancellationToken);
+            // Veganization disabled: do not generate new vegan images
             menuItem.NeedsVeganImageRegeneration = false;
             await dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -142,8 +142,6 @@ public class AiService : BackgroundService
             new UserChatMessage($"Retten hedder \"{menuItem.FoodName}\""));
 
         menuItem.CorrectedFoodName = completion.Content[0].Text;
-
-        await CorrectVeganFoodName(menuItem);
     }
 
     private async Task CorrectVeganFoodName(MenuItem menuItem)
@@ -164,8 +162,6 @@ public class AiService : BackgroundService
             new UserChatMessage($"Retten hedder \"{menuItem.FoodDisplayName}\""));
 
         menuItem.Description = completion.Content[0].Text;
-
-        await DescribeVeganFood(menuItem);
     }
 
     private async Task DescribeVeganFood(MenuItem menuItem)

@@ -82,13 +82,13 @@ public class MenuItem : BaseDataModel
     /// Flags indicating whether various aspects need to be regenerated or updated
     /// </summary>
     public bool NeedsNameCorrection { get; set; } = true;
-    public bool NeedsVeganization { get; set; } = true;
+    public bool NeedsVeganization { get; set; } = false;
     public bool NeedsDescription { get; set; } = true;
-    public bool NeedsVeganDescription { get; set; } = true;
+    public bool NeedsVeganDescription { get; set; } = false;
     public bool NeedsRecipeGeneration { get; set; } = true;
     public bool NeedsFoodContents { get; set; } = true;
     public bool NeedsImageRegeneration { get; set; } = true;
-    public bool NeedsVeganImageRegeneration { get; set; } = true;
+    public bool NeedsVeganImageRegeneration { get; set; } = false;
 
     /// <summary>
     /// Gets the display name for the food item, using the corrected name if available, otherwise the original name

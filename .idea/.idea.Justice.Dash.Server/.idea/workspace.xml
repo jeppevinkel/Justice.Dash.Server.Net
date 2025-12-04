@@ -7,12 +7,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="Update gitignore">
+    <list default="true" id="95cd7f53-ad40-49c8-bb56-cf080a5744c3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/projectSettingsUpdater.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Justice.Dash.Server/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server.sln.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server.sln.DotSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/FoodModifierController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/FoodModifierController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/MenuController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Controllers/MenuController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/DataModels/MenuItem.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/DataModels/MenuItem.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Services/AiService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Services/AiService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/WeatherForecast.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Justice.Dash.Server/Services/FoodAndCoService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Justice.Dash.Server/Services/FoodAndCoService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,9 +23,18 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DpaMonitoringSettings">
-    <option name="autoShow" value="false" />
+    <option name="firstShow" value="false" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="333" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="thorfix/GH-13-feat/implement-netatmo-weather-api" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="MIXED" />
   </component>
@@ -39,12 +51,17 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/8fa1895c8b97b0b8f27222bbb69b58dcc382cc9edef51fa73a0a8ac1b8516f9/SystemChatMessage.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/DashboardDbContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/DashboardDbContext.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Migrations/DashboardDbContextModelSnapshot.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Program.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Services/DomicileService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Controllers/FoodModifierController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Controllers/FoodModifierController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Controllers/MenuController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Controllers/MenuController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Justice.Dash.Server/Controllers/ProgressAdoController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/DataModels/MenuItem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/DataModels/MenuItem.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Services/AiService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Services/AiService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Services/FoodAndCoService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/Jeppe/Documents/RiderProjects/Justice.Dash.Server/Justice.Dash.Server/Services/FoodAndCoService.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
@@ -55,7 +72,6 @@
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="2lcBlfJk1DOI6D3Di2uSaEPAbHd" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -63,15 +79,22 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;.NET Project.Justice.Dash.Server.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.Justice.Dash.Server/Dockerfile.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.53582555&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -82,11 +105,16 @@
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Justice.Dash.Server" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <envs>
+        <env name="Netatmo__RefreshToken" value="651aa69191a1b5910b019e35|b8c0ff70b3a1506ccc65db6f0900df42" />
         <env name="ASPNETCORE_ENVIRONMENT" value="Development" />
+        <env name="Netatmo__AccessToken" value="651aa69191a1b5910b019e35|5056be1d86aed971b2afe9430313bdfa" />
       </envs>
-      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="AUTO_ATTACH_CHILDREN" value="0" />
       <option name="PROJECT_PATH" value="$PROJECT_DIR$/Justice.Dash.Server/Justice.Dash.Server.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
@@ -142,6 +170,23 @@
       <workItem from="1725549815737" duration="18227000" />
       <workItem from="1725997343637" duration="3098000" />
       <workItem from="1729257193897" duration="2014000" />
+      <workItem from="1737134226793" duration="1229000" />
+      <workItem from="1737575916122" duration="7031000" />
+      <workItem from="1737583034213" duration="1432000" />
+      <workItem from="1738185490263" duration="6042000" />
+      <workItem from="1738271623084" duration="2652000" />
+      <workItem from="1738434863306" duration="6396000" />
+      <workItem from="1738749149537" duration="2909000" />
+      <workItem from="1740412734166" duration="4761000" />
+      <workItem from="1741554367765" duration="3646000" />
+      <workItem from="1742215555357" duration="1230000" />
+      <workItem from="1742423282807" duration="4102000" />
+      <workItem from="1742427590527" duration="2069000" />
+      <workItem from="1752699638680" duration="92000" />
+      <workItem from="1759947954680" duration="4083000" />
+      <workItem from="1760031126777" duration="2188000" />
+      <workItem from="1764866386103" duration="342000" />
+      <workItem from="1764867183410" duration="485000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <option name="closed" value="true" />
@@ -239,7 +284,255 @@
       <option name="project" value="LOCAL" />
       <updated>1725999703946</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Fix migrations">
+      <option name="closed" value="true" />
+      <created>1736947372911</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1736947372911</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Fix regen route">
+      <option name="closed" value="true" />
+      <created>1737134823697</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1737134823697</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Backend for experimental UI editor">
+      <option name="closed" value="true" />
+      <created>1737579905694</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1737579905694</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Use date for API selector">
+      <option name="closed" value="true" />
+      <created>1737581000911</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1737581000911</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Add auto include">
+      <option name="closed" value="true" />
+      <created>1737582446913</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1737582446913</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Fix returned URL on updates">
+      <option name="closed" value="true" />
+      <created>1737582660413</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1737582660413</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Move path correction to after the save point">
+      <option name="closed" value="true" />
+      <created>1737582849666</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1737582849666</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Move food modifier to separate table">
+      <option name="closed" value="true" />
+      <created>1738194539306</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1738194539306</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Add rainbow food">
+      <option name="closed" value="true" />
+      <created>1738271717963</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1738271717963</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Add food modifier">
+      <option name="closed" value="true" />
+      <created>1738271758059</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1738271758059</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fix food modifier controller">
+      <option name="closed" value="true" />
+      <created>1738272747955</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1738272747955</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Fix setting food modifier through update request">
+      <option name="closed" value="true" />
+      <created>1738274036095</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1738274036095</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Added complete create/update/delete for foood modifiers">
+      <option name="closed" value="true" />
+      <created>1738440632599</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1738440632599</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Updating a food modifier regenerates images">
+      <option name="closed" value="true" />
+      <created>1738442180938</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1738442180938</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Fix refreshing">
+      <option name="closed" value="true" />
+      <created>1738442692688</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1738442692688</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Add migration">
+      <option name="closed" value="true" />
+      <created>1738749400951</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1738749400951</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Fix the manually edited check">
+      <option name="closed" value="true" />
+      <created>1738775345095</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1738775345095</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Modify naming to my preference">
+      <option name="closed" value="true" />
+      <created>1740416016427</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1740416016427</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Fix controller template">
+      <option name="closed" value="true" />
+      <created>1740416714428</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1740416714428</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Add recipes">
+      <option name="closed" value="true" />
+      <created>1741554868145</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1741554868145</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Move recipe generation after image generation">
+      <option name="closed" value="true" />
+      <created>1741555728638</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1741555728638</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Update openai version">
+      <option name="closed" value="true" />
+      <created>1741556836728</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1741556836728</updated>
+    </task>
+    <task id="LOCAL-00035" summary="Remove console log">
+      <option name="closed" value="true" />
+      <created>1741556848990</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1741556848990</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Improve prompt">
+      <option name="closed" value="true" />
+      <created>1741557211968</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1741557211968</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Add migrations">
+      <option name="closed" value="true" />
+      <created>1742215775779</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1742215775779</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Fix netatmo integration">
+      <option name="closed" value="true" />
+      <created>1742427053090</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1742427053090</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Ensure credentials dir exists">
+      <option name="closed" value="true" />
+      <created>1742427341283</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1742427341283</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Save token always">
+      <option name="closed" value="true" />
+      <created>1742429419846</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1742429419846</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Update image gen from dall-e-3 to gpt-image-1">
+      <option name="closed" value="true" />
+      <created>1759955353695</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1759955353695</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Add partial saving during AI generations">
+      <option name="closed" value="true" />
+      <created>1759956568695</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1759956568695</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Turn food images back to wide format">
+      <option name="closed" value="true" />
+      <created>1760031210449</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1760031210450</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -261,12 +554,49 @@
   <component name="VcsManagerConfiguration">
     <option name="LOCAL_CHANGES_DETAILS_PREVIEW_SHOWN" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Initial commit" />
-    <MESSAGE value="Update docker build task" />
-    <MESSAGE value="I was stupid..." />
-    <MESSAGE value="Create the food image dir if not already exists." />
-    <MESSAGE value="Add domicile photo support" />
-    <MESSAGE value="Update gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update gitignore" />
+    <MESSAGE value="Move path correction to after the save point" />
+    <MESSAGE value="Move food modifier to separate table" />
+    <MESSAGE value="Add rainbow food" />
+    <MESSAGE value="Add food modifier" />
+    <MESSAGE value="Fix food modifier controller" />
+    <MESSAGE value="Fix setting food modifier through update request" />
+    <MESSAGE value="Added complete create/update/delete for foood modifiers" />
+    <MESSAGE value="Updating a food modifier regenerates images" />
+    <MESSAGE value="Fix refreshing" />
+    <MESSAGE value="Add migration" />
+    <MESSAGE value="Fix the manually edited check" />
+    <MESSAGE value="Modify naming to my preference" />
+    <MESSAGE value="Fix controller template" />
+    <MESSAGE value="Add recipes" />
+    <MESSAGE value="Move recipe generation after image generation" />
+    <MESSAGE value="Update openai version" />
+    <MESSAGE value="Remove console log" />
+    <MESSAGE value="Improve prompt" />
+    <MESSAGE value="Add migrations" />
+    <MESSAGE value="Fix netatmo integration" />
+    <MESSAGE value="Ensure credentials dir exists" />
+    <MESSAGE value="Save token always" />
+    <MESSAGE value="Update image gen from dall-e-3 to gpt-image-1" />
+    <MESSAGE value="Add partial saving during AI generations" />
+    <MESSAGE value="Turn food images back to wide format" />
+    <option name="LAST_COMMIT_MESSAGE" value="Turn food images back to wide format" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

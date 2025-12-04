@@ -105,13 +105,10 @@ public class MenuController : ControllerBase
             menuItem.ManuallyModified = true;
             // When food name changes, we need to regenerate everything unless explicitly provided
             menuItem.NeedsNameCorrection = true;
-            menuItem.NeedsVeganization = true;
             menuItem.NeedsDescription = true;
-            menuItem.NeedsVeganDescription = true;
             menuItem.NeedsRecipeGeneration = true;
             menuItem.NeedsFoodContents = true;
             menuItem.NeedsImageRegeneration = true;
-            menuItem.NeedsVeganImageRegeneration = true;
         }
 
         // Allow manual overrides without triggering regeneration
@@ -158,26 +155,22 @@ public class MenuController : ControllerBase
             }
             
             menuItem.NeedsImageRegeneration = true;
-            menuItem.NeedsVeganImageRegeneration = true;
         }
 
         // Handle explicit regeneration requests
         if (menuItemUpdate.RegenerateNames)
         {
             menuItem.NeedsNameCorrection = true;
-            menuItem.NeedsVeganization = true;
         }
 
         if (menuItemUpdate.RegenerateDescriptions)
         {
             menuItem.NeedsDescription = true;
-            menuItem.NeedsVeganDescription = true;
         }
 
         if (menuItemUpdate.RegenerateImages)
         {
             menuItem.NeedsImageRegeneration = true;
-            menuItem.NeedsVeganImageRegeneration = true;
         }
 
         if (menuItemUpdate.RegenerateRecipe)
