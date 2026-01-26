@@ -1,6 +1,6 @@
 # API Documentation
 
-This document provides comprehensive documentation for the Justice Dash Server API, specifically covering menu items and food modifiers.
+This document provides comprehensive documentation for the Justice Dash Server API, specifically covering menu items, food modifiers, and surveillance duty assignments.
 
 ## Table of Contents
 - [Menu API](#menu-api)
@@ -13,6 +13,11 @@ This document provides comprehensive documentation for the Justice Dash Server A
   - [Create Food Modifier](#create-food-modifier)
   - [Update Food Modifier](#update-food-modifier)
   - [Delete Food Modifier](#delete-food-modifier)
+- [Surveillance API](#surveillance-api)
+  - [Get Surveillance Entries](#get-surveillance-entries)
+  - [Create Surveillance Entry](#create-surveillance-entry)
+  - [Update Surveillance Entry](#update-surveillance-entry)
+  - [Delete Surveillance Entry](#delete-surveillance-entry)
 - [Data Models](#data-models)
 
 ---
@@ -343,6 +348,229 @@ Status: 204 No Content
 
 ---
 
+## Surveillance API
+
+The Surveillance API manages surveillance duty assignments for MDM (Mobile Device Management) and EDI (Electronic Data Interchange) systems. It allows you to track who is responsible for surveillance during specific weeks.
+
+### Get Surveillance Entries
+
+Retrieves surveillance entries from the database, categorized by type.
+
+**Endpoint:** `GET /Surveillance`
+
+**Query Parameters:**
+- `full` (boolean, optional): 
+  - `true`: Returns all surveillance entries from the database
+  - `false` (default): Returns only surveillance entries from the current week onwards in the current year
+
+**Response:** Dictionary with surveillance types as keys (MDM, EDI) and arrays of Surveillance objects as values
+
+**Example Request:**
+```http
+GET /Surveillance?full=false
+```
+
+**Example Response:**
+```json
+{
+  "MDM": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "type": "MDM",
+      "week": 12,
+      "year": 2024,
+      "responsible": "John Doe"
+    },
+    {
+      "id": "7b8c9d0e-1234-5678-90ab-cdef12345678",
+      "type": "MDM",
+      "week": 13,
+      "year": 2024,
+      "responsible": "Jane Smith"
+    }
+  ],
+  "EDI": [
+    {
+      "id": "9a1b2c3d-4e5f-6789-0abc-def123456789",
+      "type": "EDI",
+      "week": 12,
+      "year": 2024,
+      "responsible": "Bob Johnson"
+    }
+  ]
+}
+```
+
+---
+
+### Create Surveillance Entry
+
+Creates a new surveillance entry for a specific week and year.
+
+**Endpoint:** `POST /Surveillance`
+
+**Request Body:** Surveillance object
+
+```json
+{
+  "type": "MDM or EDI (required)",
+  "week": "integer (required, 1-53)",
+  "year": "integer (required)",
+  "responsible": "string (required)"
+}
+```
+
+**Response:** The created Surveillance object with status 201 (Created)
+
+**Constraints:**
+- A unique constraint exists on the combination of Type, Week, and Year
+- Attempting to create a duplicate entry will result in a 409 Conflict response
+
+**Example Request:**
+```http
+POST /Surveillance
+Content-Type: application/json
+
+{
+  "type": "MDM",
+  "week": 15,
+  "year": 2024,
+  "responsible": "Alice Williams"
+}
+```
+
+**Example Response:**
+```http
+Status: 201 Created
+
+{
+  "id": "2f3e4d5c-6789-0abc-def1-23456789abcd",
+  "type": "MDM",
+  "week": 15,
+  "year": 2024,
+  "responsible": "Alice Williams"
+}
+```
+
+**Error Response (Conflict):**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.8",
+  "title": "Conflict",
+  "status": 409,
+  "detail": "A surveillance entry with the same Type, Week, and Year already exists."
+}
+```
+
+---
+
+### Update Surveillance Entry
+
+Updates an existing surveillance entry.
+
+**Endpoint:** `PUT /Surveillance/{id}`
+
+**Path Parameters:**
+- `id` (guid, required): The unique identifier of the surveillance entry to update
+
+**Request Body:** Surveillance object (must include the same ID as in the URL)
+
+```json
+{
+  "id": "guid (required, must match URL)",
+  "type": "MDM or EDI (required)",
+  "week": "integer (required, 1-53)",
+  "year": "integer (required)",
+  "responsible": "string (required)"
+}
+```
+
+**Response:** The updated Surveillance object (200 OK), BadRequest (400), NotFound (404), or Conflict (409)
+
+**Constraints:**
+- The ID in the request body must match the ID in the URL
+- The updated entry must not conflict with existing Type/Week/Year combinations
+
+**Example Request:**
+```http
+PUT /Surveillance/3fa85f64-5717-4562-b3fc-2c963f66afa6
+Content-Type: application/json
+
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "type": "MDM",
+  "week": 12,
+  "year": 2024,
+  "responsible": "John Doe - Updated"
+}
+```
+
+**Example Response:**
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "type": "MDM",
+  "week": 12,
+  "year": 2024,
+  "responsible": "John Doe - Updated"
+}
+```
+
+**Error Response (ID Mismatch):**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1",
+  "title": "Bad Request",
+  "status": 400,
+  "detail": "The ID in the URL does not match the ID in the request body."
+}
+```
+
+**Error Response (Not Found):**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Surveillance entry with ID 3fa85f64-5717-4562-b3fc-2c963f66afa6 not found."
+}
+```
+
+---
+
+### Delete Surveillance Entry
+
+Deletes a surveillance entry.
+
+**Endpoint:** `DELETE /Surveillance/{id}`
+
+**Path Parameters:**
+- `id` (guid, required): The unique identifier of the surveillance entry to delete
+
+**Response:** NoContent (204) or NotFound (404)
+
+**Example Request:**
+```http
+DELETE /Surveillance/3fa85f64-5717-4562-b3fc-2c963f66afa6
+```
+
+**Example Response:**
+```http
+Status: 204 No Content
+```
+
+**Error Response (Not Found):**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "Surveillance entry with ID 3fa85f64-5717-4562-b3fc-2c963f66afa6 not found."
+}
+```
+
+---
+
 ## Data Models
 
 ### MenuItem
@@ -464,6 +692,36 @@ Model used for updating food modifiers.
 |----------|------|-------------|
 | `title` | string (required) | The display title of the modifier |
 | `description` | string (required) | The description that affects how the food is presented |
+
+---
+
+### Surveillance
+
+Represents a surveillance duty assignment for a specific week and year.
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | guid | Unique identifier for the surveillance entry |
+| `type` | SurveillanceType (enum) | The type of surveillance (MDM or EDI) |
+| `week` | integer | The week number (1-53) |
+| `year` | integer | The year for this surveillance assignment |
+| `responsible` | string | The name of the person responsible for surveillance during this week |
+
+**Constraints:**
+- A unique constraint exists on the combination of `type`, `week`, and `year`
+- This ensures that only one person can be responsible for each surveillance type per week
+
+---
+
+### SurveillanceType (Enum)
+
+Enumeration of surveillance types.
+
+**Values:**
+- `MDM` (0): Mobile Device Management surveillance
+- `EDI` (1): Electronic Data Interchange surveillance
 
 ---
 
