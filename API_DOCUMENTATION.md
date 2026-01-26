@@ -720,8 +720,8 @@ Represents a surveillance duty assignment for a specific week and year.
 Enumeration of surveillance types.
 
 **Values:**
-- `MDM` (0): Mobile Device Management surveillance
-- `EDI` (1): Electronic Data Interchange surveillance
+- `MDM` (0): MDMD surveillance
+- `EDI` (1): EDI surveillance
 
 ---
 
