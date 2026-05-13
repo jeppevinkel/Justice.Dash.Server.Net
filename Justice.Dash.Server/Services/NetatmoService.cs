@@ -179,12 +179,20 @@ public class NetatmoService : IHostedService
                 // Consider it's raining if rain amount is greater than 0.1 mm/hour
                 weatherData.IsRaining = rainGaugeDashBoardData.Rain > 0.1;
             }
+            else
+            {
+                _logger.LogWarning("No rain module found OR no rain data received");
+            }
             
             // Add outdoor temperature and humidity if available
             if (outdoorModule is not null && outdoorDashboardData is not null)
             {
                 weatherData.Temperature = outdoorDashboardData.Temperature;
                 weatherData.Humidity = outdoorDashboardData.HumidityPercent;
+            }
+            else
+            {
+                _logger.LogWarning("No outdoor module found OR no outdoor data received");
             }
             
             _logger.LogInformation("Weather data updated. Is raining: {IsRaining}, Rain amount: {RainAmount} mm/h", 
