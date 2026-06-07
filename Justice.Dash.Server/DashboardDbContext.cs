@@ -43,6 +43,11 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
     /// Gets or sets the collection of progress tracking data in the database
     /// </summary>
     public DbSet<Weather> Weather { get; set; }
+    
+    /// <summary>
+    /// Gets or sets the collection of surveillance day overrides in the database
+    /// </summary>
+    public DbSet<SurveillanceDayOverride> SurveillanceDayOverrides { get; set; }
 
     /// <summary>
     /// Configures the database model including table names, relationships, and indexes
@@ -59,6 +64,8 @@ public class DashboardDbContext(DbContextOptions<DashboardDbContext> options) : 
         modelBuilder.Entity<Surveillance>().ToTable("surveillance").HasIndex([
             nameof(DataModels.Surveillance.Type), nameof(DataModels.Surveillance.Week), nameof(DataModels.Surveillance.Year)
         ]).IsUnique();
+        modelBuilder.Entity<SurveillanceDayOverride>().ToTable("surveillance_day_overrides")
+            .HasIndex([nameof(SurveillanceDayOverride.Type), nameof(SurveillanceDayOverride.Date)]).IsUnique();
         modelBuilder.Entity<FoodModifier>().ToTable("food_modifiers");
         modelBuilder.Entity<ProgressAdo>().ToTable("progress_ado");
         modelBuilder.Entity<Weather>().ToTable("weather");
